@@ -12,7 +12,7 @@ Tables pushed
 
 Design
 ------
-* All columns are VARCHAR(2048) in Vertica (matches TEXT origin from SQLite).
+* Vertica column types are driven by qa_pipeline.schema (INT/FLOAT/TIMESTAMP/VARCHAR).
 * Primary keys are declared but Vertica does not enforce them; they drive the
   MERGE ON clause for idempotent upserts.
 * The module has an optional dependency on ``vertica-python``.  If absent,
@@ -42,7 +42,7 @@ import io
 import logging
 import uuid
 from datetime import datetime, timezone
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 import pandas as pd
 
@@ -52,12 +52,23 @@ except Exception:   # pragma: no cover – optional at runtime
     vertica_python = None  # type: ignore[assignment]
 
 from qa_pipeline.config import VerticaConfig
+from qa_pipeline.schema import (
+    AGG_TEST_FACT_SCHEMA,
+    DEFECT_DIM_SCHEMA,
+    TEST_CREATED_SCHEMA,
+    ColumnSchema,
+)
 from qa_pipeline.store.sqlite import SqliteStore
 
 logger = logging.getLogger(__name__)
 
 _VARCHAR = "VARCHAR(2048)"
 _TS_COL = "last_updated_at"
+
+_TYPE_VARCHAR = "VARCHAR"
+_TYPE_TIMESTAMP = "TIMESTAMP"
+_TYPE_INT = "INT"
+_TYPE_FLOAT = "FLOAT"
 
 
 # ---------------------------------------------------------------------------
@@ -122,6 +133,30 @@ _TIMESTAMP_SUFFIXES = (
 )
 
 
+def _schema_sql_type_hints(schema: List[ColumnSchema]) -> Dict[str, str]:
+    """Build SQL type hints from qa_pipeline.schema converters."""
+    hints: Dict[str, str] = {}
+    for col_schema in schema:
+        conv_name = getattr(col_schema.converter, "__name__", "")
+        if conv_name == "_to_datetime":
+            hints[col_schema.name] = _TYPE_TIMESTAMP
+        elif conv_name == "_to_int":
+            hints[col_schema.name] = _TYPE_INT
+        elif conv_name == "_to_float":
+            hints[col_schema.name] = _TYPE_FLOAT
+    return hints
+
+
+def _sql_type_for_col(col_name: str, type_hints: Dict[str, str]) -> str:
+    """Return SQL type for a column, with schema hints first and suffix fallback."""
+    hinted = type_hints.get(col_name)
+    if hinted:
+        return hinted
+    if _is_timestamp_col(col_name):
+        return _TYPE_TIMESTAMP
+    return _TYPE_VARCHAR
+
+
 def _is_timestamp_col(col_name: str) -> bool:
     """Return True when a column name looks like a datetime field.
 
@@ -132,12 +167,23 @@ def _is_timestamp_col(col_name: str) -> bool:
     return any(lower == s or lower.endswith(" " + s) for s in _TIMESTAMP_SUFFIXES)
 
 
-def _create_flex_table(cur, full_name: str, columns: List[str], pk_cols: List[str]) -> None:
-    """CREATE TABLE IF NOT EXISTS with all VARCHAR columns."""
+def _create_flex_table(
+    cur,
+    full_name: str,
+    columns: List[str],
+    pk_cols: List[str],
+    type_hints: Dict[str, str],
+) -> None:
+    """CREATE TABLE IF NOT EXISTS with schema-driven SQL types."""
     col_defs_list = []
     for c in columns:
-        if _is_timestamp_col(c):
+        col_type = _sql_type_for_col(c, type_hints)
+        if col_type == _TYPE_TIMESTAMP:
             col_defs_list.append(f"    {_q(c)} TIMESTAMP")
+        elif col_type == _TYPE_INT:
+            col_defs_list.append(f"    {_q(c)} INT")
+        elif col_type == _TYPE_FLOAT:
+            col_defs_list.append(f"    {_q(c)} FLOAT")
         else:
             col_defs_list.append(f"    {_q(c)} {_VARCHAR} DEFAULT ''")
     col_defs = ",\n".join(col_defs_list)
@@ -199,21 +245,51 @@ def _copy_to_staging(cur, staging: str, df: pd.DataFrame, columns: List[str]) ->
 
 
 def _merge_into_target(
-    cur, full_name: str, staging: str, pk_cols: List[str], measure_cols: List[str]
+    cur,
+    full_name: str,
+    staging: str,
+    pk_cols: List[str],
+    measure_cols: List[str],
+    type_hints: Dict[str, str],
 ) -> None:
+    def _numeric_float_expr(c: str) -> str:
+        val = f"TRIM(s.{_q(c)})"
+        return (
+            f"CASE "
+            f"WHEN NULLIF({val}, '') IS NULL THEN NULL "
+            f"WHEN REGEXP_LIKE({val}, '^[-+]?[0-9]*\\.?[0-9]+$') THEN {val}::FLOAT "
+            f"ELSE NULL END"
+        )
+
+    def _src_pk_expr(c: str) -> str:
+        """SQL expression for PK columns; must never evaluate to NULL for INT keys."""
+        col_type = _sql_type_for_col(c, type_hints)
+        if col_type == _TYPE_INT:
+            return f"COALESCE(({_numeric_float_expr(c)})::INT, 0)"
+        return _src_expr(c)
+
     def _src_expr(c: str) -> str:
-        """SQL expression to read column c from the staging alias s."""
-        if _is_timestamp_col(c):
-            return f"NULLIF(s.{_q(c)}, '')::TIMESTAMP"
+        """SQL expression to read and cast staging values based on target type."""
+        if c == _TS_COL:
+            return f"NULLIF(TRIM(s.{_q(c)}), '')::TIMESTAMP"
+        col_type = _sql_type_for_col(c, type_hints)
+        if col_type == _TYPE_TIMESTAMP:
+            return f"NULLIF(TRIM(s.{_q(c)}), '')::TIMESTAMP"
+        if col_type == _TYPE_INT:
+            return f"({_numeric_float_expr(c)})::INT"
+        if col_type == _TYPE_FLOAT:
+            return _numeric_float_expr(c)
         return f"s.{_q(c)}"
 
-    join_pred = " AND ".join(f"t.{_q(k)} = s.{_q(k)}" for k in pk_cols)
+    join_pred = " AND ".join(f"t.{_q(k)} = {_src_pk_expr(k)}" for k in pk_cols)
     update_set = ",\n            ".join(
         f"{_q(m)} = {_src_expr(m)}" for m in measure_cols
     )
     all_cols = pk_cols + measure_cols
     insert_cols = ", ".join(_q(c) for c in all_cols + [_TS_COL])
-    insert_vals = ", ".join([*(_src_expr(c) for c in all_cols), f"s.{_q(_TS_COL)}::TIMESTAMP"])
+    insert_vals = ", ".join(
+        [*(_src_pk_expr(c) for c in pk_cols), *(_src_expr(c) for c in measure_cols), _src_expr(_TS_COL)]
+    )
     cur.execute(
         f"""
         MERGE INTO {full_name} AS t
@@ -221,7 +297,7 @@ def _merge_into_target(
         ON {join_pred}
         WHEN MATCHED THEN
             UPDATE SET {update_set},
-                       {_q(_TS_COL)} = s.{_q(_TS_COL)}::TIMESTAMP
+                       {_q(_TS_COL)} = {_src_expr(_TS_COL)}
         WHEN NOT MATCHED THEN
             INSERT ({insert_cols}) VALUES ({insert_vals})
         """
@@ -242,6 +318,7 @@ def _push_dataframe(
     df: pd.DataFrame,
     target_table: str,
     pk_cols: List[str],
+    type_hints: Dict[str, str],
 ) -> int:
     """Upsert *df* into Vertica using COPY + MERGE pattern.
     
@@ -255,8 +332,8 @@ def _push_dataframe(
     all_cols = list(frame.columns)
     measure_cols = [c for c in all_cols if c not in pk_cols]
 
-    # Keep all columns as strings for CSV output
-    # Type conversion happens in MERGE via TRY_TO_* functions
+    # Keep all columns as strings for CSV output.
+    # Type conversion happens in MERGE via schema-driven CAST expressions.
     for col in all_cols:
         frame[col] = frame[col].fillna("").astype(str)
 
@@ -270,10 +347,10 @@ def _push_dataframe(
     conn = _connect(cfg)
     try:
         cur = conn.cursor()
-        _create_flex_table(cur, full_name, all_cols, pk_cols)
+        _create_flex_table(cur, full_name, all_cols, pk_cols, type_hints)
         _create_staging(cur, staging, all_cols)
         _copy_to_staging(cur, staging, frame, copy_cols)
-        _merge_into_target(cur, full_name, staging, pk_cols, measure_cols)
+        _merge_into_target(cur, full_name, staging, pk_cols, measure_cols, type_hints)
         conn.commit()
         logger.info("Pushed %d rows to Vertica table %r", len(frame), full_name)
         return len(frame)
@@ -319,6 +396,7 @@ class VerticaStore:
             df=df,
             target_table=self.cfg.defect_dim_table,
             pk_cols=["Bugs"],
+            type_hints=_schema_sql_type_hints(DEFECT_DIM_SCHEMA),
         )
 
     def push_agg_fact(self, store: SqliteStore) -> int:
@@ -348,6 +426,7 @@ class VerticaStore:
             df=df,
             target_table=self.cfg.agg_fact_table,
             pk_cols=available_pk,
+            type_hints=_schema_sql_type_hints(AGG_TEST_FACT_SCHEMA),
         )
 
     def push_test_created(self, store: SqliteStore) -> int:
@@ -371,6 +450,7 @@ class VerticaStore:
             df=df,
             target_table=self.cfg.test_created_table,
             pk_cols=pk,
+            type_hints=_schema_sql_type_hints(TEST_CREATED_SCHEMA),
         )
 
     def push_all(self, store: SqliteStore) -> Tuple[int, int, int]:
