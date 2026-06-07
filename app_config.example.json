@@ -1,0 +1,7 @@
+{
+  "env_file": ".env",
+  "jira_sync_config": "jira_sync_config.json",
+  "output_dir": "Report CSV",
+  "sql_template_dir": "sql_templates",
+  "default_list_delimiter": " | "
+}

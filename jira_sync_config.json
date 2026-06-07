@@ -1,0 +1,585 @@
+{
+  "jira": {
+    "base_url": "https://jira-prod.radcom.co.il:8443",
+    "api_version": "2",
+    "auth_type": "bearer",
+    "pat_env": "JIRA_PAT",
+    "email_env": "JIRA_EMAIL",
+    "token_env": "JIRA_API_TOKEN",
+    "verify_ssl": false,
+    "timeout_seconds": 60
+  },
+  "output_dir": "Report CSV",
+  "reports": [
+    {
+      "key": "automation_job",
+      "name": "Automation Job",
+      "jql": "type = \"Auto Process\" AND \"Job Name\" in (\"BE Tester - BI\",BI_Sanity, \"BE Tester - ADP\", \"BE Tester - NAM\", \"BE Tester - PAM\", \"BE Tester - SAM\", \"NAM_Regression\", \"NAM_Sanity\", \"PAM_Sanity\",\"PAM_Regression\", \"SAM_Regression\", \"SAM_Sanity\") AND \"Automation Test Run Approved\" = Yes AND  created >= 2026-01-01 ORDER BY created ASC",
+      "filename_template": "Automation Job {year} {timestamp}.csv",
+      "page_size": 100,
+      "max_results": 5000,
+      "columns": [
+        {
+          "csv": "Issue Type",
+          "path": "fields.issuetype",
+          "default": ""
+        },
+        {
+          "csv": "Issue key",
+          "path": "key",
+          "default": ""
+        },
+        {
+          "csv": "Description",
+          "path": "fields.description",
+          "default": ""
+        },
+        {
+          "csv": "Created",
+          "path": "fields.created",
+          "default": ""
+        },
+        {
+          "csv": "Updated",
+          "path": "fields.updated",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Blockers)",
+          "path": "fields.customfield_12806",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Automation Test Run Approved)",
+          "path": "fields.customfield_13017",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Job Name)",
+          "path": "fields.customfield_12726",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Job Run By User)",
+          "path": "fields.customfield_12718",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Job Stack Prefix)",
+          "path": "fields.customfield_12721",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Job Stack Version)",
+          "path": "fields.customfield_12722",
+          "default": ""
+        },
+        {
+          "csv": "Sprint",
+          "path": "fields.customfield_10104",
+          "default": ""
+        },
+        {
+          "csv": "Sub-Tasks",
+          "path": "fields.subtasks",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "key": "executed_test",
+      "name": "BI Executed Test",
+      "jql": "type = \"Auto Test\" AND \"Job Start Time\" >= 2026-01-01 and \"Job End Time\" < 2027-01-01 and \"Executed Test\" is not EMPTY and summary ~ 'BI-'",
+      "filename_template": "BI Executed Test {year} {timestamp}.csv",
+      "page_size": 100,
+      "max_results": 5000,
+      "columns": [
+        {
+          "csv": "Issue Type",
+          "path": "fields.issuetype",
+          "default": ""
+        },
+        {
+          "csv": "Issue key",
+          "path": "key",
+          "default": ""
+        },
+        {
+          "csv": "Created",
+          "path": "fields.created",
+          "default": ""
+        },
+        {
+          "csv": "Updated",
+          "path": "fields.updated",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Auto Test Run Status)",
+          "path": "fields.customfield_12714",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Job Start Time)",
+          "path": "fields.customfield_12719",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Job End Time)",
+          "path": "fields.customfield_12720",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Executed Test)",
+          "path": "fields.customfield_12712",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "key": "executed_test",
+      "name": "NAM Executed Test",
+      "jql": "type = \"Auto Test\" AND \"Job Start Time\" >= 2026-01-01 and \"Job End Time\" < 2027-01-01 and \"Executed Test\" is not EMPTY and summary ~ 'NAM-'",
+      "filename_template": "NAM Executed Test {year} {timestamp}.csv",
+      "page_size": 100,
+      "max_results": 5000,
+      "columns": [
+        {
+          "csv": "Issue Type",
+          "path": "fields.issuetype",
+          "default": ""
+        },
+        {
+          "csv": "Issue key",
+          "path": "key",
+          "default": ""
+        },
+        {
+          "csv": "Created",
+          "path": "fields.created",
+          "default": ""
+        },
+        {
+          "csv": "Updated",
+          "path": "fields.updated",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Auto Test Run Status)",
+          "path": "fields.customfield_12714",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Job Start Time)",
+          "path": "fields.customfield_12719",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Job End Time)",
+          "path": "fields.customfield_12720",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Executed Test)",
+          "path": "fields.customfield_12712",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "key": "executed_test",
+      "name": "PAM Executed Test",
+      "jql": "type = \"Auto Test\" AND \"Job Start Time\" >= 2026-01-01 and \"Job End Time\" < 2027-01-01 and \"Executed Test\" is not EMPTY and summary ~ 'PAM-'",
+      "filename_template": "PAM Executed Test {year} {timestamp}.csv",
+      "page_size": 100,
+      "max_results": 5000,
+      "columns": [
+        {
+          "csv": "Issue Type",
+          "path": "fields.issuetype",
+          "default": ""
+        },
+        {
+          "csv": "Issue key",
+          "path": "key",
+          "default": ""
+        },
+        {
+          "csv": "Created",
+          "path": "fields.created",
+          "default": ""
+        },
+        {
+          "csv": "Updated",
+          "path": "fields.updated",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Auto Test Run Status)",
+          "path": "fields.customfield_12714",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Job Start Time)",
+          "path": "fields.customfield_12719",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Job End Time)",
+          "path": "fields.customfield_12720",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Executed Test)",
+          "path": "fields.customfield_12712",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "key": "executed_test",
+      "name": "SAM Executed Test",
+      "jql": "type = \"Auto Test\" AND \"Job Start Time\" >= 2026-01-01 and \"Job End Time\" < 2027-01-01 and \"Executed Test\" is not EMPTY and summary ~ 'SAM-'",
+      "filename_template": "SAM Executed Test {year} {timestamp}.csv",
+      "page_size": 100,
+      "max_results": 5000,
+      "columns": [
+        {
+          "csv": "Issue Type",
+          "path": "fields.issuetype",
+          "default": ""
+        },
+        {
+          "csv": "Issue key",
+          "path": "key",
+          "default": ""
+        },
+        {
+          "csv": "Created",
+          "path": "fields.created",
+          "default": ""
+        },
+        {
+          "csv": "Updated",
+          "path": "fields.updated",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Auto Test Run Status)",
+          "path": "fields.customfield_12714",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Job Start Time)",
+          "path": "fields.customfield_12719",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Job End Time)",
+          "path": "fields.customfield_12720",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Executed Test)",
+          "path": "fields.customfield_12712",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "key": "executed_test",
+      "name": "ADP Executed Test",
+      "jql": "type = \"Auto Test\" AND \"Job Start Time\" >= 2026-01-01 and \"Job End Time\" < 2027-01-01 and \"Executed Test\" is not EMPTY and summary ~ 'ADP-'",
+      "filename_template": "ADP Executed Test {year} {timestamp}.csv",
+      "page_size": 100,
+      "max_results": 5000,
+      "columns": [
+        {
+          "csv": "Issue Type",
+          "path": "fields.issuetype",
+          "default": ""
+        },
+        {
+          "csv": "Issue key",
+          "path": "key",
+          "default": ""
+        },
+        {
+          "csv": "Created",
+          "path": "fields.created",
+          "default": ""
+        },
+        {
+          "csv": "Updated",
+          "path": "fields.updated",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Auto Test Run Status)",
+          "path": "fields.customfield_12714",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Job Start Time)",
+          "path": "fields.customfield_12719",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Job End Time)",
+          "path": "fields.customfield_12720",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Executed Test)",
+          "path": "fields.customfield_12712",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "key": "executed_test",
+      "name": "ADM Executed Test",
+      "jql": "type = \"Auto Test\" AND \"Job Start Time\" >= 2026-01-01 and \"Job End Time\" < 2027-01-01 and \"Executed Test\" is not EMPTY and summary ~ 'ADM-'",
+      "filename_template": "ADM Executed Test {year} {timestamp}.csv",
+      "page_size": 100,
+      "max_results": 5000,
+      "columns": [
+        {
+          "csv": "Issue Type",
+          "path": "fields.issuetype",
+          "default": ""
+        },
+        {
+          "csv": "Issue key",
+          "path": "key",
+          "default": ""
+        },
+        {
+          "csv": "Created",
+          "path": "fields.created",
+          "default": ""
+        },
+        {
+          "csv": "Updated",
+          "path": "fields.updated",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Auto Test Run Status)",
+          "path": "fields.customfield_12714",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Job Start Time)",
+          "path": "fields.customfield_12719",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Job End Time)",
+          "path": "fields.customfield_12720",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Executed Test)",
+          "path": "fields.customfield_12712",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "key": "test_created",
+      "name": "Test Created",
+      "jql": "type = Test AND reporter in (sukanya.khurana, ishan.tiwari, vlad.dolinschi, roxana.sulugiuc, maria.frunzulica, sachin.prakash, abhishek.kumar) and ((createdDate >= 2026-01-01 AND created < 2027-01-01) OR (updated >= 2026-01-01 and updated < 2027-01-01))",
+      "filename_template": "Test Created {year} {timestamp}.csv",
+      "page_size": 100,
+      "max_results": 5000,
+      "columns": [
+        {
+          "csv": "Issue Type",
+          "path": "fields.issuetype",
+          "default": ""
+        },
+        {
+          "csv": "Issue key",
+          "path": "key",
+          "default": ""
+        },
+        {
+          "csv": "Project key",
+          "path": "fields.project.key",
+          "default": ""
+        },
+        {
+          "csv": "Creator",
+          "path": "fields.creator",
+          "default": ""
+        },
+        {
+          "csv": "Created",
+          "path": "fields.created",
+          "default": ""
+        },
+        {
+          "csv": "Updated",
+          "path": "fields.updated",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Epic Link)",
+          "path": "fields.customfield_10100",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (TestRunStatus)",
+          "path": "fields.customfield_10010",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Automated)",
+          "path": "fields.customfield_10901",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Customer Name (epic))",
+          "path": "fields.customfield_10421",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Test Sets association with a Test)",
+          "path": "fields.customfield_10007",
+          "default": ""
+        },
+        {
+          "csv": "Related Bugs",
+          "path": "fields.customfield_12621",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Related Stories/Tasks)",
+          "path": "fields.customfield_12847",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "key": "defects",
+      "name": "Defects",
+      "jql": "\"Scrum Team\" in (ORG-66, ORG-13, ORG-12, ORG-11, ORG-91, ORG-92) AND issuetype = \"Bug\" AND (created >= '2026-01-01' OR updated >= '2026-01-01') ORDER BY updated DESC",
+      "filename_template": "Defects {year} {timestamp}.csv",
+      "page_size": 100,
+      "max_results": 5000,
+      "columns": [
+        {
+          "csv": "Issue Type",
+          "path": "fields.issuetype",
+          "default": ""
+        },
+        {
+          "csv": "Issue key",
+          "path": "key",
+          "default": ""
+        },
+        {
+          "csv": "Status",
+          "path": "fields.status",
+          "default": ""
+        },
+        {
+          "csv": "Priority",
+          "path": "fields.priority",
+          "default": ""
+        },
+        {
+          "csv": "Assignee",
+          "path": "fields.assignee",
+          "default": ""
+        },
+        {
+          "csv": "Creator",
+          "path": "fields.creator",
+          "default": ""
+        },
+        {
+          "csv": "Created",
+          "path": "fields.created",
+          "default": ""
+        },
+        {
+          "csv": "Updated",
+          "path": "fields.updated",
+          "default": ""
+        },
+        {
+          "csv": "Fix Version/s",
+          "path": "fields.fixVersions",
+          "default": ""
+        },
+        {
+          "csv": "Component/s",
+          "path": "fields.components",
+          "default": ""
+        },
+        {
+          "csv": "Labels",
+          "path": "fields.labels",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Bug Category)",
+          "path": "fields.customfield_12615",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Bug Origin)",
+          "path": "fields.customfield_10407",
+          "default": ""
+        },
+        {
+          "csv": "Clones",
+          "path": "fields.customfield_10628",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Customer Name (epic))",
+          "path": "fields.customfield_10421",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Customer/s Name)",
+          "path": "fields.customfield_10618",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Detected Version)",
+          "path": "fields.customfield_10302",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Scrum Team)",
+          "path": "fields.customfield_12300",
+          "default": ""
+        },
+        {
+          "csv": "Sprint",
+          "path": "fields.customfield_10104",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Story Points)",
+          "path": "fields.customfield_10106",
+          "default": ""
+        },
+        {
+          "csv": "Custom field (Verified in)",
+          "path": "fields.customfield_11800",
+          "default": ""
+        },
+        {
+          "csv": "Resolved",
+          "path": "fields.resolutiondate",
+          "default": ""
+        }
+      ]
+    }
+  ]
+}

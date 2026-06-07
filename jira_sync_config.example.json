@@ -1,0 +1,114 @@
+{
+  "jira": {
+    "base_url": "https://jira-prod.radcom.co.il:8443",
+    "api_version": "2",
+    "auth_type": "bearer",
+    "pat_env": "JIRA_PAT",
+    "email_env": "JIRA_EMAIL",
+    "token_env": "JIRA_API_TOKEN",
+    "verify_ssl": true,
+    "timeout_seconds": 60
+  },
+  "output_dir": "Report CSV",
+  "reports": [
+    {
+      "key": "automation_job",
+      "name": "Automation Job",
+      "jql": "project = AUT AND issuetype = \"Auto Process\" ORDER BY updated DESC",
+      "filename_template": "Automation Job {year} {timestamp}.csv",
+      "page_size": 100,
+      "max_results": 5000,
+      "columns": [
+        { "csv": "Issue key", "path": "key" },
+        { "csv": "Issue Type", "path": "fields.issuetype.name" },
+        { "csv": "Status", "path": "fields.status.name" },
+        { "csv": "Project key", "path": "fields.project.key" },
+        { "csv": "Priority", "path": "fields.priority.name" },
+        { "csv": "Created", "path": "fields.created" },
+        { "csv": "Updated", "path": "fields.updated" },
+        { "csv": "Sprint", "path": "fields.customfield_10020", "default": "" },
+        { "csv": "Sub-Tasks", "path": "fields.subtasks" },
+        { "csv": "Custom field (Blockers)", "path": "fields.customfield_10100", "default": "" },
+        { "csv": "Custom field (Automation Test Run Approved)", "path": "fields.customfield_10200", "default": "" },
+        { "csv": "Custom field (Job Name)", "path": "fields.customfield_10300", "default": "" },
+        { "csv": "Custom field (Job Run By User)", "path": "fields.customfield_10400", "default": "" },
+        { "csv": "Custom field (Job Stack Prefix)", "path": "fields.customfield_10500", "default": "" },
+        { "csv": "Custom field (Job Stack Version)", "path": "fields.customfield_10600", "default": "" }
+      ]
+    },
+    {
+      "key": "executed_test",
+      "name": "Executed Test",
+      "jql": "project = AUT AND issuetype = \"Auto Test\" ORDER BY updated DESC",
+      "filename_template": "Executed Test {year} {timestamp}.csv",
+      "page_size": 100,
+      "max_results": 5000,
+      "columns": [
+        { "csv": "Issue key", "path": "key" },
+        { "csv": "Issue Type", "path": "fields.issuetype.name" },
+        { "csv": "Status", "path": "fields.status.name" },
+        { "csv": "Project key", "path": "fields.project.key" },
+        { "csv": "Priority", "path": "fields.priority.name" },
+        { "csv": "Created", "path": "fields.created" },
+        { "csv": "Updated", "path": "fields.updated" },
+        { "csv": "Custom field (Auto Test Run Status)", "path": "fields.customfield_10700", "default": "" },
+        { "csv": "Custom field (Job Start Time)", "path": "fields.customfield_10800", "default": "" },
+        { "csv": "Custom field (Job End Time)", "path": "fields.customfield_10900", "default": "" },
+        { "csv": "Custom field (Executed Test)", "path": "fields.customfield_11000", "default": "" }
+      ]
+    },
+    {
+      "key": "test_created",
+      "name": "Test Created",
+      "jql": "issuetype = \"Test\" ORDER BY updated DESC",
+      "filename_template": "Test Created {year} {timestamp}.csv",
+      "page_size": 100,
+      "max_results": 5000,
+      "columns": [
+        { "csv": "Issue key", "path": "key" },
+        { "csv": "Issue Type", "path": "fields.issuetype.name" },
+        { "csv": "Status", "path": "fields.status.name" },
+        { "csv": "Project key", "path": "fields.project.key" },
+        { "csv": "Creator", "path": "fields.creator.displayName", "default": "" },
+        { "csv": "Created", "path": "fields.created" },
+        { "csv": "Updated", "path": "fields.updated" },
+        { "csv": "Sprint", "path": "fields.customfield_10020", "default": "" },
+        { "csv": "Custom field (Epic Link)", "path": "fields.customfield_11100", "default": "" },
+        { "csv": "Custom field (TestRunStatus)", "path": "fields.customfield_11200", "default": "" },
+        { "csv": "Inward issue link (Related Bugs)", "path": "fields.customfield_11300", "default": "" },
+        { "csv": "Outward issue link (Defect)", "path": "fields.customfield_11400", "default": "" },
+        { "csv": "Custom field (Automated)", "path": "fields.customfield_11500", "default": "" },
+        { "csv": "Related Bugs", "path": "fields.customfield_11600", "default": "" }
+      ]
+    },
+    {
+      "key": "defects",
+      "name": "Defects",
+      "jql": "issuetype = \"Bug\" ORDER BY updated DESC",
+      "filename_template": "Defects {year} {timestamp}.csv",
+      "page_size": 100,
+      "max_results": 5000,
+      "columns": [
+        { "csv": "Issue key", "path": "key" },
+        { "csv": "Issue Type", "path": "fields.issuetype.name" },
+        { "csv": "Status", "path": "fields.status.name" },
+        { "csv": "Project key", "path": "fields.project.key" },
+        { "csv": "Priority", "path": "fields.priority.name" },
+        { "csv": "Severity", "path": "fields.customfield_11700", "default": "" },
+        { "csv": "Assignee", "path": "fields.assignee.displayName", "default": "" },
+        { "csv": "Creator", "path": "fields.creator.displayName", "default": "" },
+        { "csv": "Created", "path": "fields.created" },
+        { "csv": "Updated", "path": "fields.updated" },
+        { "csv": "Fix Version/s", "path": "fields.fixVersions" },
+        { "csv": "Component/s", "path": "fields.components" },
+        { "csv": "Labels", "path": "fields.labels" },
+        { "csv": "Custom field (Bug Category)", "path": "fields.customfield_11800", "default": "" },
+        { "csv": "Custom field (Bug Origin)", "path": "fields.customfield_11900", "default": "" },
+        { "csv": "Custom field (Scrum Team)", "path": "fields.customfield_12000", "default": "" },
+        { "csv": "Sprint", "path": "fields.customfield_10020", "default": "" },
+        { "csv": "Custom field (Story Points)", "path": "fields.customfield_10016", "default": "" },
+        { "csv": "Custom field (Verified in)", "path": "fields.customfield_12100", "default": "" }
+      ]
+    }
+  ]
+}
