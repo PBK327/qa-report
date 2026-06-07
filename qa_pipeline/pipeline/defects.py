@@ -24,6 +24,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from .preprocess import load_deduped_report_csvs, read_cleaned_csv, write_cleaned_csv
+
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
@@ -144,6 +146,7 @@ def run_defects(
     glob_pattern: str = "Defects *.csv",
     auto_df: pd.DataFrame | None = None,
     exec_df: pd.DataFrame | None = None,
+    use_cleaned: bool = False,
 ) -> PipelineResult:
     """Stage 3: build defect dimension and full fact table.
 
@@ -164,16 +167,23 @@ def run_defects(
     PipelineResult
         Contains ``defect_dim`` and ``agg_test_fact`` DataFrames.
     """
-    matches = sorted(Path(report_csv_dir).glob(glob_pattern))
-    if not matches:
-        raise FileNotFoundError(
-            f"No Defects CSVs found in {report_csv_dir!r} matching '{glob_pattern}'"
+    if use_cleaned:
+        defcase = read_cleaned_csv(report_csv_dir, "defects_cleaned.csv")
+        matches = [Path(report_csv_dir) / "cleaned" / "defects_cleaned.csv"]
+    else:
+        defcase, matches = load_deduped_report_csvs(
+            report_csv_dir,
+            glob_pattern,
+            key_column="Issue key",
+            updated_col="Updated",
+            created_col="Created",
         )
-
-    # Use the most recent file if multiple snapshots exist
-    defects_path = matches[-1]
-    logger.info("Stage 3 – defects: reading %s", defects_path.name)
-    defcase = pd.read_csv(defects_path, dtype=str).fillna("")
+        write_cleaned_csv(report_csv_dir, "defects_cleaned.csv", defcase)
+    logger.info(
+        "Stage 3 – defects: loaded %d deduplicated rows from %d file(s)",
+        len(defcase),
+        len(matches),
+    )
 
     # --- Sprint enrichment ---
     defcase = _enrich_sprint_columns(defcase)

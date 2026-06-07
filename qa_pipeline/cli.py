@@ -126,7 +126,13 @@ def cmd_process(args: argparse.Namespace) -> None:
     from qa_pipeline.store.sqlite import SqliteStore
 
     logger.info("Running pipeline on %s", cfg.output_dir)
-    result = run_pipeline(cfg.output_dir)
+    result = run_pipeline(
+        cfg.output_dir,
+        auto_process_glob=args.auto_process_glob,
+        executed_test_glob=args.executed_test_glob,
+        defects_glob=args.defects_glob,
+        use_cleaned=args.use_cleaned,
+    )
 
     logger.info(
         "Pipeline complete: fact=%d rows, defect_dim=%d rows",
@@ -137,6 +143,7 @@ def cmd_process(args: argparse.Namespace) -> None:
     test_created_df = run_test_created(
         cfg.output_dir,
         glob_pattern=args.test_created_glob,
+        use_cleaned=args.use_cleaned,
     )
     logger.info("Test Created stage complete: %d rows", len(test_created_df))
 
@@ -354,6 +361,11 @@ def _build_parser() -> argparse.ArgumentParser:
     proc.add_argument("--executed-test-glob", default="* Executed Test *.csv")
     proc.add_argument("--defects-glob", default="Defects *.csv")
     proc.add_argument("--test-created-glob", default="Test Created *.csv")
+    proc.add_argument(
+        "--use-cleaned",
+        action="store_true",
+        help="Read from Report CSV/cleaned/*.csv files instead of raw snapshots",
+    )
 
     # push-vertica
     push = sub.add_parser("push-vertica", help="Push SQLite → Vertica")

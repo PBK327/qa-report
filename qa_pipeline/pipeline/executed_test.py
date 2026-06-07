@@ -16,6 +16,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from .preprocess import load_deduped_report_csvs, read_cleaned_csv, write_cleaned_csv
+
 logger = logging.getLogger(__name__)
 
 _DROP_COLUMNS = {"Issue Type", "Created", "Updated", "Custom field (Job Start Time)", "Custom field (Job End Time)"}
@@ -34,6 +36,7 @@ def run_executed_test(
     report_csv_dir: Path,
     glob_pattern: str = "* Executed Test *.csv",
     auto_df: pd.DataFrame | None = None,
+    use_cleaned: bool = False,
 ) -> pd.DataFrame:
     """Stage 2: merge all Executed Test CSVs, compute duration, join with auto_df.
 
@@ -52,26 +55,18 @@ def run_executed_test(
     pd.DataFrame
         Merged fact DataFrame with duration computed and optional Stage 1 join.
     """
-    matches = sorted(Path(report_csv_dir).glob(glob_pattern))
-    if not matches:
-        raise FileNotFoundError(
-            f"No Executed Test CSVs found in {report_csv_dir!r} matching '{glob_pattern}'"
+    if use_cleaned:
+        df = read_cleaned_csv(report_csv_dir, "executed_test_cleaned.csv")
+        matches = [Path(report_csv_dir) / "cleaned" / "executed_test_cleaned.csv"]
+    else:
+        df, matches = load_deduped_report_csvs(
+            report_csv_dir,
+            glob_pattern,
+            key_column="Issue key",
+            updated_col="Updated",
+            created_col="Created",
         )
-
-    frames = []
-    for p in matches:
-        try:
-            frame = pd.read_csv(p, dtype=str).fillna("")
-            if not frame.empty:
-                frames.append(frame)
-        except Exception as exc:
-            logger.warning("Skipping %s: %s", p.name, exc)
-
-    if not frames:
-        raise FileNotFoundError(
-            f"All Executed Test CSVs in {report_csv_dir!r} were empty or unreadable"
-        )
-    df = pd.concat(frames, ignore_index=True)
+        write_cleaned_csv(report_csv_dir, "executed_test_cleaned.csv", df)
 
     logger.info(
         "Stage 2 – executed_test: loaded %d rows from %d file(s)", len(df), len(matches)
@@ -96,7 +91,7 @@ def run_executed_test(
         df["Executed Test Duration (Minutes)"] = pd.NA
 
     drop_present = list(_DROP_COLUMNS & set(df.columns))
-    df = df.drop(columns=drop_present).rename(columns=_RENAME_MAP).drop_duplicates()
+    df = df.drop(columns=drop_present).rename(columns=_RENAME_MAP)
 
     if auto_df is None:
         logger.info("Stage 2 – executed_test: no auto_df provided, returning merged test rows only")

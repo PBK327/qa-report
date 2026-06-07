@@ -19,6 +19,8 @@ from typing import Any, Dict, List, Set, Tuple
 import numpy as np
 import pandas as pd
 
+from .preprocess import load_deduped_report_csvs, read_cleaned_csv, write_cleaned_csv
+
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
@@ -132,7 +134,11 @@ def _forward_fill_by_issue(df: pd.DataFrame) -> pd.DataFrame:
 # Public API
 # ---------------------------------------------------------------------------
 
-def run_auto_process(report_csv_dir: Path, glob_pattern: str = "Automation Job *.csv") -> pd.DataFrame:
+def run_auto_process(
+    report_csv_dir: Path,
+    glob_pattern: str = "Automation Job *.csv",
+    use_cleaned: bool = False,
+) -> pd.DataFrame:
     """Stage 1: load, parse, and explode automation job CSV data.
 
     Parameters
@@ -147,17 +153,18 @@ def run_auto_process(report_csv_dir: Path, glob_pattern: str = "Automation Job *
     pd.DataFrame
         Enriched DataFrame ready to merge with Stage 2 output.
     """
-    matches = sorted(Path(report_csv_dir).glob(glob_pattern))
-    if not matches:
-        raise FileNotFoundError(
-            f"No Automation Job CSVs found in {report_csv_dir!r} matching '{glob_pattern}'"
+    if use_cleaned:
+        df = read_cleaned_csv(report_csv_dir, "automation_job_cleaned.csv")
+        matches = [Path(report_csv_dir) / "cleaned" / "automation_job_cleaned.csv"]
+    else:
+        df, matches = load_deduped_report_csvs(
+            report_csv_dir,
+            glob_pattern,
+            key_column="Issue key",
+            updated_col="Updated",
+            created_col="Created",
         )
-
-    # Concatenate all matching files (allows multiple job CSVs)
-    frames = []
-    for path in matches:
-        frames.append(pd.read_csv(path, dtype=str).fillna(""))
-    df = pd.concat(frames, ignore_index=True).drop_duplicates(subset=["Issue key"])
+        write_cleaned_csv(report_csv_dir, "automation_job_cleaned.csv", df)
 
     logger.info("Stage 1 – auto_process: loaded %d rows from %d file(s)", len(df), len(matches))
 

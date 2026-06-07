@@ -15,35 +15,29 @@ from pathlib import Path
 
 import pandas as pd
 
+from .preprocess import load_deduped_report_csvs, read_cleaned_csv, write_cleaned_csv
+
 logger = logging.getLogger(__name__)
 
 
 def run_test_created(
     report_csv_dir: Path,
     glob_pattern: str = "Test Created *.csv",
+    use_cleaned: bool = False,
 ) -> pd.DataFrame:
     """Load Test Created CSV snapshots and return a deduplicated DataFrame."""
-    matches = sorted(Path(report_csv_dir).glob(glob_pattern))
-    if not matches:
-        raise FileNotFoundError(
-            f"No Test Created CSVs found in {report_csv_dir!r} matching '{glob_pattern}'"
+    if use_cleaned:
+        df = read_cleaned_csv(report_csv_dir, "test_created_cleaned.csv")
+        matches = [Path(report_csv_dir) / "cleaned" / "test_created_cleaned.csv"]
+    else:
+        df, matches = load_deduped_report_csvs(
+            report_csv_dir,
+            glob_pattern,
+            key_column="Issue key",
+            updated_col="Updated",
+            created_col="Created",
         )
-
-    frames = []
-    for p in matches:
-        try:
-            frame = pd.read_csv(p, dtype=str).fillna("")
-            if not frame.empty:
-                frames.append(frame)
-        except Exception as exc:
-            logger.warning("Skipping %s: %s", p.name, exc)
-
-    if not frames:
-        raise FileNotFoundError(
-            f"All Test Created CSVs in {report_csv_dir!r} were empty or unreadable"
-        )
-
-    df = pd.concat(frames, ignore_index=True).drop_duplicates()
+        write_cleaned_csv(report_csv_dir, "test_created_cleaned.csv", df)
     logger.info(
         "Stage TC – test_created: loaded %d rows from %d file(s)",
         len(df),

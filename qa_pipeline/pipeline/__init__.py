@@ -27,12 +27,28 @@ def run_pipeline(
     auto_process_glob: str = "Automation Job *.csv",
     executed_test_glob: str = "* Executed Test *.csv",
     defects_glob: str = "Defects *.csv",
+    use_cleaned: bool = False,
 ) -> PipelineResult:
     """Run all three stages end-to-end and return the combined result."""
     import pathlib
     report_csv_dir = pathlib.Path(report_csv_dir)
 
-    auto_df = run_auto_process(report_csv_dir, glob_pattern=auto_process_glob)
+    auto_df = run_auto_process(
+        report_csv_dir,
+        glob_pattern=auto_process_glob,
+        use_cleaned=use_cleaned,
+    )
     # Stage 2 receives auto_df so the join with executed-test data is chained.
-    exec_df = run_executed_test(report_csv_dir, glob_pattern=executed_test_glob, auto_df=auto_df)
-    return run_defects(report_csv_dir, glob_pattern=defects_glob, auto_df=auto_df, exec_df=exec_df)
+    exec_df = run_executed_test(
+        report_csv_dir,
+        glob_pattern=executed_test_glob,
+        auto_df=auto_df,
+        use_cleaned=use_cleaned,
+    )
+    return run_defects(
+        report_csv_dir,
+        glob_pattern=defects_glob,
+        auto_df=auto_df,
+        exec_df=exec_df,
+        use_cleaned=use_cleaned,
+    )

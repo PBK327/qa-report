@@ -1,4 +1,4 @@
-.PHONY: help setup install download process push-vertica run clean list-sql render-sql check-jira test-connection docs
+.PHONY: help setup install download process process-cleaned push-vertica run clean list-sql render-sql check-jira test-connection docs
 
 VENV_DIR ?= $(shell pwd)/../Dashboard/.venv
 PYTHON := "$(VENV_DIR)/bin/python"
@@ -14,6 +14,7 @@ help:
 	@echo "Core Pipeline:"
 	@echo "  make download          Fetch Jira CSVs (Report CSV/)"
 	@echo "  make process           Run 3-stage pipeline → SQLite"
+	@echo "  make process-cleaned   Run pipeline from Report CSV/cleaned only"
 	@echo "  make push-vertica      Push SQLite → Vertica"
 	@echo "  make run               Full pipeline: download → process → push-vertica"
 	@echo ""
@@ -67,6 +68,10 @@ download:
 process:
 	@echo "Running 3-stage pipeline (auto_process → executed_test → defects)..."
 	$(PYTHON) -m qa_pipeline.cli process
+
+process-cleaned:
+	@echo "Running 3-stage pipeline from cleaned CSVs..."
+	$(PYTHON) -m qa_pipeline.cli process --use-cleaned
 
 push-vertica:
 	@echo "Pushing SQLite tables to Vertica..."
