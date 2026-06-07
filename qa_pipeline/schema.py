@@ -1,7 +1,7 @@
 """
 qa_pipeline.schema
 ====================
-Schema definitions for agg_test_fact and defect_dim tables.
+Schema definitions for agg_test_fact, defect_dim, and test_created tables.
 
 Defines proper data types for each column to enable correct sorting, filtering,
 and aggregation in downstream consumers (Vertica, analytics tools, etc.).
@@ -11,9 +11,10 @@ Design
 SQLite stores all columns as TEXT by default. This module provides:
 
 1. ``AGG_TEST_FACT_SCHEMA`` – Column type mappings for fact table
-2. ``DEFECT_DIM_SCHEMA`` – Column type mappings for dimension table  
-3. ``convert_df_to_schema()`` – Function to apply schema to DataFrame
-4. ``get_sql_create_from_schema()`` – Generate SQL CREATE TABLE statements
+2. ``DEFECT_DIM_SCHEMA`` – Column type mappings for defect dimension table
+3. ``TEST_CREATED_SCHEMA`` – Column type mappings for test-created table
+4. ``convert_df_to_schema()`` – Function to apply schema to DataFrame
+5. ``get_sql_create_from_schema()`` – Generate SQL CREATE TABLE statements
 
 When reading from SQLite, call ``convert_df_to_schema(df, SCHEMA_NAME)`` to
 restore proper types before downstream processing.
@@ -181,6 +182,29 @@ DEFECT_DIM_SCHEMA = [
     ColumnSchema("Scope Change", _to_str, "Whether defect was in scope (Planned, Added During Sprint, Unplanned)"),
     ColumnSchema("Open Bugs", _to_int, "Open bug count in sprint"),
     ColumnSchema("Closed Bugs", _to_int, "Closed bug count in sprint"),
+]
+
+
+# ---------------------------------------------------------------------------
+# Test Created Table Schema
+# ---------------------------------------------------------------------------
+
+TEST_CREATED_SCHEMA = [
+    ColumnSchema("Issue Type", _to_str, "Issue type, expected 'Test'"),
+    ColumnSchema("Issue key", _to_str, "Test issue key"),
+    ColumnSchema("Project key", _to_str, "Project key"),
+    ColumnSchema("Creator", _to_str, "User who created the test"),
+    ColumnSchema("Created", _to_datetime, "Test creation timestamp (UTC)"),
+    ColumnSchema("Updated", _to_datetime, "Test last update timestamp (UTC)"),
+    ColumnSchema("Custom field (Epic Link)", _to_str, "Linked epic"),
+    ColumnSchema("Custom field (TestRunStatus)", _to_str, "Current test run status"),
+    ColumnSchema("Inward issue link (Related Bugs)", _to_str, "Inbound related bug links"),
+    ColumnSchema("Outward issue link (Defect)", _to_str, "Outbound defect links"),
+    ColumnSchema("Custom field (Automated)", _to_str, "Automation coverage marker"),
+    ColumnSchema("Custom field (Customer Name (epic))", _to_str, "Customer name from epic"),
+    ColumnSchema("Custom field (Test Sets association with a Test)", _to_str, "Associated test sets"),
+    ColumnSchema("Related Bugs", _to_str, "Related bug issue keys"),
+    ColumnSchema("Custom field (Related Stories/Tasks)", _to_str, "Related stories/tasks"),
 ]
 
 

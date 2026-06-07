@@ -2,6 +2,21 @@
   "env_file": ".env",
   "jira_sync_config": "jira_sync_config.json",
   "output_dir": "Report CSV",
+  "sqlite_db": "qa_pipeline.db",
+  "agg_fact_table": "agg_test_fact",
+  "defect_dim_table": "defect_dim",
+  "test_created_table": "test_created",
   "sql_template_dir": "sql_templates",
-  "default_list_delimiter": " | "
+  "default_list_delimiter": " | ",
+  "vertica": {
+    "host": "",
+    "port": 5433,
+    "database": "vdb",
+    "user": "dbadmin",
+    "password": "",
+    "schema": "public",
+    "agg_fact_table": "qa_agg_test_fact",
+    "defect_dim_table": "qa_defect_dim",
+    "test_created_table": "qa_test_created"
+  }
 }

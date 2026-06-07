@@ -16,6 +16,7 @@ from qa_pipeline.config import load_pipeline_config
 from qa_pipeline.schema import (
     AGG_TEST_FACT_SCHEMA,
     DEFECT_DIM_SCHEMA,
+    TEST_CREATED_SCHEMA,
     describe_schema,
     get_sql_create_from_schema,
 )
@@ -58,6 +59,23 @@ def cmd_show_schema_defect_dim() -> None:
     print()
 
 
+def cmd_show_schema_test_created() -> None:
+    """Show TEST_CREATED table schema with data types."""
+    print("\n" + "=" * 80)
+    print("TEST_CREATED Schema (Test Created Staging Table)")
+    print("=" * 80)
+    print("\nColumns and their data types:")
+    print(describe_schema(TEST_CREATED_SCHEMA))
+    print("\n\nSQL CREATE TABLE statement:")
+    sql = get_sql_create_from_schema(
+        "test_created",
+        TEST_CREATED_SCHEMA,
+        pk_cols=["Issue key"],
+    )
+    print(sql)
+    print()
+
+
 def cmd_verify_types() -> None:
     """Verify and display current data types in SQLite tables."""
     cfg = load_pipeline_config()
@@ -88,6 +106,11 @@ def cmd_verify_types() -> None:
         print(f"  Shape: {fact_typed.shape}")
         print(f"  Data types:\n{fact_typed.dtypes}")
 
+        print("\n\nTest Created (typed):")
+        test_created_typed = store.read_test_created_typed()
+        print(f"  Shape: {test_created_typed.shape}")
+        print(f"  Data types:\n{test_created_typed.dtypes}")
+
         # Show sample values with types
         print("\n\n--- Sample Data (Defect Dimension) ---")
         if not defect_typed.empty:
@@ -106,6 +129,15 @@ def cmd_verify_types() -> None:
             ]
             if sample_cols:
                 print(fact_typed[sample_cols].head(3))
+
+        print("\n\n--- Sample Data (Test Created) ---")
+        if not test_created_typed.empty:
+            sample_cols = [
+                col for col in ["Issue key", "Created", "Updated", "Custom field (TestRunStatus)"]
+                if col in test_created_typed.columns
+            ]
+            if sample_cols:
+                print(test_created_typed[sample_cols].head(3))
 
 
 def cmd_export_typed_csv(output_dir: str = "typed_exports") -> None:
@@ -139,6 +171,12 @@ def cmd_export_typed_csv(output_dir: str = "typed_exports") -> None:
         fact_file = out_path / "agg_test_fact_typed.csv"
         fact_typed.to_csv(fact_file, index=False)
         print(f"  ✓ {fact_file} ({len(fact_typed)} rows)")
+
+        # Export test_created table
+        test_created_typed = store.read_test_created_typed()
+        test_created_file = out_path / "test_created_typed.csv"
+        test_created_typed.to_csv(test_created_file, index=False)
+        print(f"  ✓ {test_created_file} ({len(test_created_typed)} rows)")
 
     print(f"\nExport complete. Files can be opened in Excel or analyzed with tools like:")
     print("  - pandas.read_csv() (Python)")

@@ -3,9 +3,10 @@ qa_pipeline.store.sqlite
 =========================
 SQLite staging layer – the first stop for all pipeline output.
 
-Two tables are managed:
-  * ``agg_test_fact``  – AGG_TEST_WITH_DEFECTS (test runs enriched with defects)
-  * ``defect_dim``     – defect dimension (sprint-annotated, one row per bug)
+Three tables are managed:
+    * ``agg_test_fact``   – AGG_TEST_WITH_DEFECTS (test runs enriched with defects)
+    * ``defect_dim``      – defect dimension (sprint-annotated, one row per bug)
+    * ``test_created``    – Test Created Jira export staging table
 
 Design decisions
 ----------------
@@ -49,6 +50,7 @@ import pandas as pd
 from qa_pipeline.schema import (
     AGG_TEST_FACT_SCHEMA,
     DEFECT_DIM_SCHEMA,
+    TEST_CREATED_SCHEMA,
     convert_df_to_schema,
 )
 
@@ -143,12 +145,96 @@ def _upsert_df(
     return len(rows)
 
 
+def _create_test_created_typed_view(conn: sqlite3.Connection, table: str) -> None:
+    """Create a typed SQL view over the raw test_created staging table.
+
+    SQLite does not have a native DATETIME storage class, so the view exposes:
+      - normalized datetime text columns (UTC)
+      - epoch integer columns for reliable numeric filtering/sorting
+    """
+    view = f"{table}_typed_v"
+    cur = conn.cursor()
+    cur.execute(f'DROP VIEW IF EXISTS "{view}"')
+    cur.execute(
+        f'''
+        CREATE VIEW "{view}" AS
+        SELECT
+            "Issue key" AS issue_key,
+            "Issue Type" AS issue_type,
+            "Project key" AS project_key,
+            "Creator" AS creator,
+            datetime(
+                CASE
+                    WHEN length("Created") >= 28
+                    THEN substr("Created", 1, 19)
+                         || substr("Created", 24, 1)
+                         || substr("Created", 25, 2)
+                         || ':'
+                         || substr("Created", 27, 2)
+                    ELSE "Created"
+                END
+            ) AS created_utc,
+            datetime(
+                CASE
+                    WHEN length("Updated") >= 28
+                    THEN substr("Updated", 1, 19)
+                         || substr("Updated", 24, 1)
+                         || substr("Updated", 25, 2)
+                         || ':'
+                         || substr("Updated", 27, 2)
+                    ELSE "Updated"
+                END
+            ) AS updated_utc,
+            CAST(
+                strftime(
+                    '%s',
+                    CASE
+                        WHEN length("Created") >= 28
+                        THEN substr("Created", 1, 19)
+                             || substr("Created", 24, 1)
+                             || substr("Created", 25, 2)
+                             || ':'
+                             || substr("Created", 27, 2)
+                        ELSE "Created"
+                    END
+                ) AS INTEGER
+            ) AS created_epoch,
+            CAST(
+                strftime(
+                    '%s',
+                    CASE
+                        WHEN length("Updated") >= 28
+                        THEN substr("Updated", 1, 19)
+                             || substr("Updated", 24, 1)
+                             || substr("Updated", 25, 2)
+                             || ':'
+                             || substr("Updated", 27, 2)
+                        ELSE "Updated"
+                    END
+                ) AS INTEGER
+            ) AS updated_epoch,
+            "Custom field (Epic Link)" AS epic_link,
+            "Custom field (TestRunStatus)" AS test_run_status,
+            "Custom field (Automated)" AS automated,
+            "Related Bugs" AS related_bugs,
+            "Inward issue link (Related Bugs)" AS inward_related_bugs,
+            "Outward issue link (Defect)" AS outward_defect,
+            "Custom field (Customer Name (epic))" AS customer_name_epic,
+            "Custom field (Test Sets association with a Test)" AS test_sets,
+            "Custom field (Related Stories/Tasks)" AS related_stories_tasks
+        FROM "{table}"
+        '''
+    )
+    conn.commit()
+    logger.info("Created view %r", view)
+
+
 # ---------------------------------------------------------------------------
 # Public class
 # ---------------------------------------------------------------------------
 
 class SqliteStore:
-    """Manages the two staging tables inside a single SQLite database.
+    """Manages the staging tables inside a single SQLite database.
 
     Parameters
     ----------
@@ -158,6 +244,8 @@ class SqliteStore:
         Name of the fact table (default ``agg_test_fact``).
     defect_dim_table:
         Name of the dimension table (default ``defect_dim``).
+    test_created_table:
+        Name of the test-created table (default ``test_created``).
     """
 
     def __init__(
@@ -166,10 +254,12 @@ class SqliteStore:
         *,
         agg_fact_table: str = "agg_test_fact",
         defect_dim_table: str = "defect_dim",
+        test_created_table: str = "test_created",
     ) -> None:
         self._conn = conn
         self.agg_fact_table = agg_fact_table
         self.defect_dim_table = defect_dim_table
+        self.test_created_table = test_created_table
 
     # ------------------------------------------------------------------
     # Context manager
@@ -182,6 +272,7 @@ class SqliteStore:
         *,
         agg_fact_table: str = "agg_test_fact",
         defect_dim_table: str = "defect_dim",
+        test_created_table: str = "test_created",
     ) -> "SqliteStore":
         """Open a SQLite connection and return a ready-to-use store."""
         path = Path(db_path)
@@ -190,7 +281,12 @@ class SqliteStore:
         conn.execute("PRAGMA journal_mode=WAL")   # safe concurrent access
         conn.execute("PRAGMA foreign_keys=ON")
         logger.info("Opened SQLite store at %s", path)
-        return cls(conn, agg_fact_table=agg_fact_table, defect_dim_table=defect_dim_table)
+        return cls(
+            conn,
+            agg_fact_table=agg_fact_table,
+            defect_dim_table=defect_dim_table,
+            test_created_table=test_created_table,
+        )
 
     def close(self) -> None:
         self._conn.close()
@@ -237,6 +333,23 @@ class SqliteStore:
             )
         return _upsert_df(self._conn, self.agg_fact_table, df, pk_cols=available_pk)
 
+    def upsert_test_created(self, df: pd.DataFrame) -> int:
+        """Upsert Test Created staging rows.
+
+        Natural key: ``Issue key`` if present; otherwise first available column.
+        """
+        if df.empty:
+            return 0
+
+        if "Issue key" in df.columns:
+            pk = ["Issue key"]
+        else:
+            pk = [df.columns[0]]
+
+        rows = _upsert_df(self._conn, self.test_created_table, df, pk_cols=pk)
+        _create_test_created_typed_view(self._conn, self.test_created_table)
+        return rows
+
     # ------------------------------------------------------------------
     # Read operations (used by Vertica push)
     # ------------------------------------------------------------------
@@ -280,6 +393,17 @@ class SqliteStore:
             f'SELECT * FROM "{self.agg_fact_table}"', self._conn
         )
 
+    def read_test_created(self) -> pd.DataFrame:
+        """Load the full Test Created staging table (as TEXT)."""
+        return pd.read_sql_query(
+            f'SELECT * FROM "{self.test_created_table}"', self._conn
+        )
+
+    def read_test_created_typed(self) -> pd.DataFrame:
+        """Load Test Created table with proper data types applied."""
+        df = self.read_test_created()
+        return convert_df_to_schema(df, TEST_CREATED_SCHEMA, strict=False)
+
     def read_agg_fact_typed(self) -> pd.DataFrame:
         """Load fact table with proper data types applied.
         
@@ -307,10 +431,14 @@ class SqliteStore:
     # ------------------------------------------------------------------
 
     def table_counts(self) -> dict[str, int]:
-        """Return row counts for both tables."""
+        """Return row counts for managed tables."""
         counts: dict[str, int] = {}
         cur = self._conn.cursor()
-        for table in (self.agg_fact_table, self.defect_dim_table):
+        for table in (
+            self.agg_fact_table,
+            self.defect_dim_table,
+            self.test_created_table,
+        ):
             try:
                 cur.execute(f'SELECT COUNT(*) FROM "{table}"')
                 counts[table] = cur.fetchone()[0]

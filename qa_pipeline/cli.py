@@ -122,6 +122,7 @@ def cmd_process(args: argparse.Namespace) -> None:
     cfg = _load_config(args)
 
     from qa_pipeline.pipeline import run_pipeline
+    from qa_pipeline.pipeline.test_created import run_test_created
     from qa_pipeline.store.sqlite import SqliteStore
 
     logger.info("Running pipeline on %s", cfg.output_dir)
@@ -133,18 +134,30 @@ def cmd_process(args: argparse.Namespace) -> None:
         len(result.defect_dim),
     )
 
+    test_created_df = run_test_created(
+        cfg.output_dir,
+        glob_pattern=args.test_created_glob,
+    )
+    logger.info("Test Created stage complete: %d rows", len(test_created_df))
+
     with SqliteStore.open(
         cfg.sqlite_db_path,
         agg_fact_table=cfg.agg_fact_table,
         defect_dim_table=cfg.defect_dim_table,
+        test_created_table=cfg.test_created_table,
     ) as store:
         dim_rows = store.upsert_defect_dim(result.defect_dim)
         fact_rows = store.upsert_agg_fact(result.agg_test_fact)
+        test_created_rows = store.upsert_test_created(test_created_df)
 
     counts = _read_table_counts(cfg)
     print(f"  ✓ SQLite staging complete: {cfg.sqlite_db_path}")
     print(f"    {cfg.agg_fact_table}: {fact_rows} rows upserted (total={counts.get(cfg.agg_fact_table, '?')})")
     print(f"    {cfg.defect_dim_table}: {dim_rows} rows upserted (total={counts.get(cfg.defect_dim_table, '?')})")
+    print(
+        f"    {cfg.test_created_table}: {test_created_rows} rows upserted "
+        f"(total={counts.get(cfg.test_created_table, '?')})"
+    )
 
 
 def _read_table_counts(cfg) -> dict:
@@ -154,6 +167,7 @@ def _read_table_counts(cfg) -> dict:
             cfg.sqlite_db_path,
             agg_fact_table=cfg.agg_fact_table,
             defect_dim_table=cfg.defect_dim_table,
+            test_created_table=cfg.test_created_table,
         ) as store:
             return store.table_counts()
     except Exception:
@@ -177,6 +191,7 @@ def cmd_push_vertica(args: argparse.Namespace) -> None:
         cfg.sqlite_db_path,
         agg_fact_table=cfg.agg_fact_table,
         defect_dim_table=cfg.defect_dim_table,
+        test_created_table=cfg.test_created_table,
     ) as store:
         counts = store.table_counts()
         if all(v <= 0 for v in counts.values()):
@@ -184,12 +199,13 @@ def cmd_push_vertica(args: argparse.Namespace) -> None:
 
         vs = VerticaStore(cfg.vertica)
         logger.info("Pushing to Vertica at %s:%s/%s", cfg.vertica.host, cfg.vertica.port, cfg.vertica.database)
-        fact_rows, dim_rows = vs.push_all(store)
+        fact_rows, dim_rows, test_created_rows = vs.push_all(store)
 
     schema = cfg.vertica.schema
     print(f"  ✓ Vertica push complete")
     print(f"    {schema}.{cfg.vertica.agg_fact_table}: {fact_rows} rows")
     print(f"    {schema}.{cfg.vertica.defect_dim_table}: {dim_rows} rows")
+    print(f"    {schema}.{cfg.vertica.test_created_table}: {test_created_rows} rows")
 
 
 def cmd_run(args: argparse.Namespace) -> None:
@@ -278,14 +294,20 @@ def cmd_show_schema(args: argparse.Namespace) -> None:
     from qa_pipeline.commands_schema import (
         cmd_show_schema_agg_fact,
         cmd_show_schema_defect_dim,
+        cmd_show_schema_test_created,
     )
 
     if args.table == "agg-fact":
         cmd_show_schema_agg_fact()
     elif args.table == "defect-dim":
         cmd_show_schema_defect_dim()
+    elif args.table == "test-created":
+        cmd_show_schema_test_created()
     else:
-        raise SystemExit(f"Unknown table: {args.table}. Use 'agg-fact' or 'defect-dim'")
+        raise SystemExit(
+            f"Unknown table: {args.table}. "
+            "Use 'agg-fact', 'defect-dim', or 'test-created'"
+        )
 
 
 def cmd_verify_types(args: argparse.Namespace) -> None:
@@ -296,7 +318,7 @@ def cmd_verify_types(args: argparse.Namespace) -> None:
 
 def cmd_export_typed(args: argparse.Namespace) -> None:
     """Export typed data to CSV files for external analysis."""
-    from qa_pipeline.commands_schema import cmd_export_typed as export_impl
+    from qa_pipeline.commands_schema import cmd_export_typed_csv as export_impl
     export_impl(output_dir=args.output_dir or "typed_exports")
 
 
@@ -331,6 +353,7 @@ def _build_parser() -> argparse.ArgumentParser:
     proc.add_argument("--auto-process-glob", default="Automation Job *.csv")
     proc.add_argument("--executed-test-glob", default="* Executed Test *.csv")
     proc.add_argument("--defects-glob", default="Defects *.csv")
+    proc.add_argument("--test-created-glob", default="Test Created *.csv")
 
     # push-vertica
     push = sub.add_parser("push-vertica", help="Push SQLite → Vertica")
@@ -358,7 +381,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
     # show-schema
     ss = sub.add_parser("show-schema", help="Show schema definitions and data types")
-    ss.add_argument("table", choices=["agg-fact", "defect-dim"],
+    ss.add_argument("table", choices=["agg-fact", "defect-dim", "test-created"],
                     help="Which schema to display")
 
     # verify-types

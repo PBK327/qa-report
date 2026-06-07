@@ -44,6 +44,7 @@ class VerticaConfig:
     schema: str = "public"
     agg_fact_table: str = "qa_agg_test_fact"
     defect_dim_table: str = "qa_defect_dim"
+    test_created_table: str = "qa_test_created"
 
 
 @dataclass
@@ -56,6 +57,7 @@ class PipelineConfig:
     default_list_delimiter: str = " | "
     agg_fact_table: str = "agg_test_fact"
     defect_dim_table: str = "defect_dim"
+    test_created_table: str = "test_created"
     vertica: Optional[VerticaConfig] = None
 
 
@@ -159,6 +161,9 @@ def load_pipeline_config(
 
     agg_fact_table = _env_or_json("APP_AGG_FACT_TABLE", "agg_fact_table", "agg_test_fact")
     defect_dim_table = _env_or_json("APP_DEFECT_DIM_TABLE", "defect_dim_table", "defect_dim")
+    test_created_table = _env_or_json(
+        "APP_TEST_CREATED_TABLE", "test_created_table", "test_created"
+    )
 
     vertica: Optional[VerticaConfig] = None
     vertica_data = data.get("vertica")
@@ -172,6 +177,7 @@ def load_pipeline_config(
             schema=os.environ.get("VERTICA_SCHEMA") or str(vertica_data.get("schema", "public")),
             agg_fact_table=str(vertica_data.get("agg_fact_table", "qa_agg_test_fact")),
             defect_dim_table=str(vertica_data.get("defect_dim_table", "qa_defect_dim")),
+            test_created_table=str(vertica_data.get("test_created_table", "qa_test_created")),
         )
 
     return PipelineConfig(
@@ -183,5 +189,6 @@ def load_pipeline_config(
         default_list_delimiter=default_list_delimiter,
         agg_fact_table=agg_fact_table,
         defect_dim_table=defect_dim_table,
+        test_created_table=test_created_table,
         vertica=vertica,
     )

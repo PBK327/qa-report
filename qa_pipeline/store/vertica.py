@@ -2,12 +2,13 @@
 qa_pipeline.store.vertica
 ==========================
 Vertica push layer – reads staged data from SQLite and bulk-loads it to
-two Vertica tables via COPY FROM STDIN + MERGE.
+three Vertica tables via COPY FROM STDIN + MERGE.
 
 Tables pushed
 -------------
 * ``qa_agg_test_fact``  – from ``agg_test_fact`` SQLite table
 * ``qa_defect_dim``     – from ``defect_dim``    SQLite table
+* ``qa_test_created``   – from ``test_created``  SQLite table
 
 Design
 ------
@@ -31,6 +32,7 @@ Usage
         vs = VerticaStore(cfg)
         dim_rows  = vs.push_defect_dim(store)
         fact_rows = vs.push_agg_fact(store)
+        test_rows = vs.push_test_created(store)
 """
 
 from __future__ import annotations
@@ -286,14 +288,38 @@ class VerticaStore:
             pk_cols=available_pk,
         )
 
-    def push_all(self, store: SqliteStore) -> Tuple[int, int]:
-        """Push both tables.
+    def push_test_created(self, store: SqliteStore) -> int:
+        """Read test_created from SQLite, push to Vertica ``cfg.test_created_table``.
+
+        Primary key: ``Issue key``.
 
         Returns
         -------
-        tuple[int, int]
-            ``(agg_fact_rows, defect_dim_rows)``
+        int
+            Number of rows pushed.
+        """
+        df = store.read_test_created()
+        if df.empty:
+            logger.warning("test_created table is empty – nothing to push to Vertica")
+            return 0
+
+        pk = ["Issue key"] if "Issue key" in df.columns else [df.columns[0]]
+        return _push_dataframe(
+            cfg=self.cfg,
+            df=df,
+            target_table=self.cfg.test_created_table,
+            pk_cols=pk,
+        )
+
+    def push_all(self, store: SqliteStore) -> Tuple[int, int, int]:
+        """Push all staging tables.
+
+        Returns
+        -------
+        tuple[int, int, int]
+            ``(agg_fact_rows, defect_dim_rows, test_created_rows)``
         """
         fact_rows = self.push_agg_fact(store)
         dim_rows = self.push_defect_dim(store)
-        return fact_rows, dim_rows
+        test_created_rows = self.push_test_created(store)
+        return fact_rows, dim_rows, test_created_rows

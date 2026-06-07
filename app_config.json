@@ -5,6 +5,7 @@
   "sqlite_db": "qa_pipeline.db",
   "agg_fact_table": "agg_test_fact",
   "defect_dim_table": "defect_dim",
+  "test_created_table": "test_created",
   "sql_template_dir": "sql_templates",
   "default_list_delimiter": " | ",
   "vertica": {
@@ -16,6 +17,7 @@
     "password": "",
     "schema": "public",
     "agg_fact_table": "qa_agg_test_fact",
-    "defect_dim_table": "qa_defect_dim"
+    "defect_dim_table": "qa_defect_dim",
+    "test_created_table": "qa_test_created"
   }
 }
