@@ -12,6 +12,9 @@ run             download → process → push-vertica in one shot.
 list-sql        List available SQL templates.
 render-sql      Render a SQL template with variable substitution.
 check-jira      Diagnose Jira API connectivity.
+show-schema     Show schema definitions and data types.
+verify-types    Verify and display data types in SQLite tables.
+export-typed    Export typed data to CSV for external analysis.
 
 Usage
 -----
@@ -25,6 +28,9 @@ Usage
         --var table=qa_agg_test_fact --var period_start=2026-01-01 \
         --output generated/aggregation.sql
     python -m qa_pipeline.cli check-jira
+    python -m qa_pipeline.cli show-schema agg-fact
+    python -m qa_pipeline.cli verify-types
+    python -m qa_pipeline.cli export-typed
 """
 
 from __future__ import annotations
@@ -267,6 +273,34 @@ def cmd_check_jira(args: argparse.Namespace) -> None:
         print(f"  user:           {result.get('user', '')}")
 
 
+def cmd_show_schema(args: argparse.Namespace) -> None:
+    """Show schema definitions and data types."""
+    from qa_pipeline.commands_schema import (
+        cmd_show_schema_agg_fact,
+        cmd_show_schema_defect_dim,
+    )
+
+    if args.table == "agg-fact":
+        cmd_show_schema_agg_fact()
+    elif args.table == "defect-dim":
+        cmd_show_schema_defect_dim()
+    else:
+        raise SystemExit(f"Unknown table: {args.table}. Use 'agg-fact' or 'defect-dim'")
+
+
+def cmd_verify_types(args: argparse.Namespace) -> None:
+    """Verify and display data types in SQLite tables."""
+    from qa_pipeline.commands_schema import cmd_verify_types as verify_impl
+    verify_impl()
+
+
+def cmd_export_typed(args: argparse.Namespace) -> None:
+    """Export typed data to CSV files for external analysis."""
+    from qa_pipeline.commands_schema import cmd_export_typed as export_impl
+    export_impl(output_dir=args.output_dir or "typed_exports")
+
+
+
 # ---------------------------------------------------------------------------
 # Argument parser
 # ---------------------------------------------------------------------------
@@ -322,6 +356,19 @@ def _build_parser() -> argparse.ArgumentParser:
     cj = sub.add_parser("check-jira", help="Diagnose Jira API connectivity")
     cj.add_argument("--jira-pat", default=None)
 
+    # show-schema
+    ss = sub.add_parser("show-schema", help="Show schema definitions and data types")
+    ss.add_argument("table", choices=["agg-fact", "defect-dim"],
+                    help="Which schema to display")
+
+    # verify-types
+    sub.add_parser("verify-types", help="Verify data types in SQLite tables")
+
+    # export-typed
+    et = sub.add_parser("export-typed", help="Export typed data to CSV")
+    et.add_argument("--output-dir", "-o", default="typed_exports",
+                    help="Directory to save exported files (default: typed_exports)")
+
     return parser
 
 
@@ -342,6 +389,9 @@ def main(argv: Optional[List[str]] = None) -> None:
         "list-sql": cmd_list_sql,
         "render-sql": cmd_render_sql,
         "check-jira": cmd_check_jira,
+        "show-schema": cmd_show_schema,
+        "verify-types": cmd_verify_types,
+        "export-typed": cmd_export_typed,
     }
 
     try:

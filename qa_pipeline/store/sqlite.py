@@ -14,20 +14,27 @@ Design decisions
 * Upsert uses ``INSERT OR REPLACE`` keyed on the natural business key for each
   table, so re-running the pipeline is idempotent.
 * The class is a context manager so the connection is always closed cleanly.
+* Type conversion is handled by qa_pipeline.schema module for downstream consumers.
 
 Usage
 -----
     from qa_pipeline.store.sqlite import SqliteStore
+    from qa_pipeline.schema import convert_df_to_schema, AGG_TEST_FACT_SCHEMA
 
-    with SqliteStore.open(db_path, agg_fact_table="agg_test_fact",
-                          defect_dim_table="defect_dim") as store:
+    # Write: pipeline output is automatically stored as TEXT in SQLite
+    with SqliteStore.open(db_path) as store:
         rows = store.upsert_defect_dim(defect_df)
         rows = store.upsert_agg_fact(fact_df)
 
-    # Read back for downstream Vertica push
+    # Read back with proper types for downstream
     with SqliteStore.open(db_path) as store:
-        defect_df = store.read_defect_dim()
-        fact_df   = store.read_agg_fact()
+        defect_df = store.read_defect_dim_typed()  # Returns proper types
+        fact_df   = store.read_agg_fact_typed()    # Returns proper types
+
+    # Or read raw (TEXT) and convert later
+    with SqliteStore.open(db_path) as store:
+        fact_df_text = store.read_agg_fact()
+        fact_df_typed = convert_df_to_schema(fact_df_text, AGG_TEST_FACT_SCHEMA)
 """
 
 from __future__ import annotations
@@ -38,6 +45,12 @@ from pathlib import Path
 from typing import List
 
 import pandas as pd
+
+from qa_pipeline.schema import (
+    AGG_TEST_FACT_SCHEMA,
+    DEFECT_DIM_SCHEMA,
+    convert_df_to_schema,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -229,16 +242,65 @@ class SqliteStore:
     # ------------------------------------------------------------------
 
     def read_defect_dim(self) -> pd.DataFrame:
-        """Load the full defect dimension table."""
+        """Load the full defect dimension table (as TEXT, no type conversion).
+        
+        Use ``read_defect_dim_typed()`` to get proper types for downstream consumers.
+        """
         return pd.read_sql_query(
             f'SELECT * FROM "{self.defect_dim_table}"', self._conn
         )
 
+    def read_defect_dim_typed(self) -> pd.DataFrame:
+        """Load defect dimension with proper data types applied.
+        
+        Converts all columns to their appropriate types (datetime, int, float, bool, str)
+        according to DEFECT_DIM_SCHEMA. Safe for downstream analytics, Vertica, or BI tools.
+        
+        Returns
+        -------
+        pd.DataFrame
+            Defect dimension with typed columns.
+        
+        Example
+        -------
+        >>> with SqliteStore.open(db_path) as store:
+        ...     df = store.read_defect_dim_typed()
+        ...     df['Bug Created'].dtype  # datetime64[ns, UTC]
+        ...     df['Story Points'].dtype  # float64
+        """
+        df = self.read_defect_dim()
+        return convert_df_to_schema(df, DEFECT_DIM_SCHEMA, strict=False)
+
     def read_agg_fact(self) -> pd.DataFrame:
-        """Load the full fact table."""
+        """Load the full fact table (as TEXT, no type conversion).
+        
+        Use ``read_agg_fact_typed()`` to get proper types for downstream consumers.
+        """
         return pd.read_sql_query(
             f'SELECT * FROM "{self.agg_fact_table}"', self._conn
         )
+
+    def read_agg_fact_typed(self) -> pd.DataFrame:
+        """Load fact table with proper data types applied.
+        
+        Converts all columns to their appropriate types (datetime, int, float, bool, str)
+        according to AGG_TEST_FACT_SCHEMA. Safe for downstream analytics, Vertica, or BI tools.
+        
+        Returns
+        -------
+        pd.DataFrame
+            Aggregation fact table with typed columns.
+        
+        Example
+        -------
+        >>> with SqliteStore.open(db_path) as store:
+        ...     df = store.read_agg_fact_typed()
+        ...     df['Created'].dtype  # datetime64[ns, UTC]
+        ...     df['No of Test Scenario'].dtype  # int64
+        ...     df['Test Pass %'].dtype  # float64
+        """
+        df = self.read_agg_fact()
+        return convert_df_to_schema(df, AGG_TEST_FACT_SCHEMA, strict=False)
 
     # ------------------------------------------------------------------
     # Diagnostics

@@ -1,9 +1,8 @@
 .PHONY: help setup install download process push-vertica run clean list-sql render-sql check-jira test-connection docs
 
 VENV_DIR ?= $(shell pwd)/../Dashboard/.venv
-PYTHON := $(VENV_DIR)/bin/python
-PIP := $(VENV_DIR)/bin/pip
-ACTIVATE := . $(VENV_DIR)/bin/activate
+PYTHON := "$(VENV_DIR)/bin/python"
+PIP := "$(VENV_DIR)/bin/pip"
 
 help:
 	@echo "QA Pipeline – Makefile targets"
@@ -63,15 +62,15 @@ create-env-file:
 
 download:
 	@echo "Downloading Jira reports..."
-	$(ACTIVATE) && $(PYTHON) -m qa_pipeline.cli download
+	$(PYTHON) -m qa_pipeline.cli download
 
 process:
 	@echo "Running 3-stage pipeline (auto_process → executed_test → defects)..."
-	$(ACTIVATE) && $(PYTHON) -m qa_pipeline.cli process
+	$(PYTHON) -m qa_pipeline.cli process
 
 push-vertica:
 	@echo "Pushing SQLite tables to Vertica..."
-	$(ACTIVATE) && $(PYTHON) -m qa_pipeline.cli push-vertica
+	$(PYTHON) -m qa_pipeline.cli push-vertica
 
 run: download process push-vertica
 	@echo "✓ Full pipeline complete"
@@ -85,11 +84,11 @@ check-jira: check-jira-auth
 
 check-jira-auth:
 	@echo "Testing Jira API connectivity..."
-	$(ACTIVATE) && $(PYTHON) -m qa_pipeline.cli check-jira
+	$(PYTHON) -m qa_pipeline.cli check-jira
 
 list-sql:
 	@echo "Available SQL templates:"
-	$(ACTIVATE) && $(PYTHON) -m qa_pipeline.cli list-sql
+	$(PYTHON) -m qa_pipeline.cli list-sql
 
 render-sql:
 	@if [ -z "$(TEMPLATE)" ]; then \
@@ -102,7 +101,7 @@ render-sql:
 	for var in $(filter-out $@,$(MAKECMDGOALS)); do \
 		vars_str="$$vars_str --sql-var $$var"; \
 	done; \
-	$(ACTIVATE) && $(PYTHON) -m qa_pipeline.cli render-sql "$(TEMPLATE)" $$vars_str --output generated/rendered.sql
+	$(PYTHON) -m qa_pipeline.cli render-sql "$(TEMPLATE)" $$vars_str --output generated/rendered.sql
 	@echo "✓ Output: generated/rendered.sql"
 
 # ───────────────────────────────────────────────────────────────────────────
@@ -128,7 +127,7 @@ clean-all: clean
 
 lint:
 	@echo "Checking Python syntax..."
-	$(ACTIVATE) && $(PYTHON) -m py_compile qa_pipeline/*.py qa_dashboard/*.py
+	$(PYTHON) -m py_compile qa_pipeline/*.py qa_dashboard/*.py
 
 test: lint check-jira
 	@echo "✓ Basic checks passed"
