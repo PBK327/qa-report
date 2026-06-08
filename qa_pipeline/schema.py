@@ -113,6 +113,7 @@ AGG_TEST_FACT_SCHEMA = [
     ColumnSchema("Custom field (Job Start Time)", _to_datetime, "Test execution start time (UTC)"),
     ColumnSchema("Custom field (Job End Time)", _to_datetime, "Test execution end time (UTC)"),
     ColumnSchema("Job Duration (minutes)", _to_float, "Duration in minutes"),
+    ColumnSchema("Executed Test Duration (Minutes)", _to_float, "Duration of executed test in minutes"),
     
     # AR parsed columns
     ColumnSchema("Test Group", _to_str, "Application/feature group being tested"),
