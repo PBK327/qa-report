@@ -102,6 +102,7 @@ Thumbs.db
 htmlcov/
 .tox/
 .hypothesis/
+QA_ANALYSIS/
 
 # ============================================================================
 # Downloaded Data (optional - uncomment if needed)

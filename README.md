@@ -348,6 +348,51 @@ This is intentional:
 - Both tables are upserted in the same sync run.
 - `last_updated_at` is written in UTC for auditability.
 
+#### SQL template: 5MIN -> HOUR -> DAY rollup (Vertica)
+- template: `sql_templates/aggregation/rollup_5min_hour_day_vertica.sql`
+- purpose:
+  - build and load three physical aggregation tables
+  - `AGG_QA_REPORT_5_MIN` with 5-minute `START_TIME`
+  - `AGG_QA_REPORT_HOUR` derived from 5-minute table using `DATE_TRUNC('hour', start_time)`
+  - `AGG_QA_REPORT_DAY` derived from hourly table using `DATE_TRUNC('day', start_time)`
+
+Render example:
+
+```bash
+python -m qa_pipeline.cli render-sql aggregation/rollup_5min_hour_day_vertica.sql \
+  --var agg_test_fact_relation=omniq.qa_agg_test_fact \
+  --var defect_dim_relation=omniq.qa_defect_dim \
+  --var target_schema=omniq \
+  --var target_table_5min=AGG_QA_REPORT_5_MIN \
+  --var target_table_hour=AGG_QA_REPORT_HOUR \
+  --var target_table_day=AGG_QA_REPORT_DAY \
+  --var "period_start=2026-01-01 00:00:00" \
+  --var "period_end=2027-01-01 00:00:00" \
+  --output generated/rollup_5min_hour_day_vertica.sql
+```
+
+Run the rendered SQL in Vertica to create/load all three aggregation tables.
+
+One-step execution (render + execute in Vertica):
+
+```bash
+python -m qa_pipeline.cli run-rollup-sql \
+  --period-start "2026-01-01 00:00:00" \
+  --period-end "2027-01-01 00:00:00" \
+  --target-table-5min AGG_QA_REPORT_5_MIN \
+  --target-table-hour AGG_QA_REPORT_HOUR \
+  --target-table-day AGG_QA_REPORT_DAY \
+  --output generated/rollup_5min_hour_day_vertica.sql
+```
+
+Defaults used by `run-rollup-sql`:
+- `agg_test_fact_relation`: `<vertica.schema>.<vertica.agg_fact_table>`
+- `defect_dim_relation`: `<vertica.schema>.<vertica.defect_dim_table>`
+- `target_schema`: `<vertica.schema>`
+- `target_table_5min`: `AGG_QA_REPORT_5_MIN`
+- `target_table_hour`: `AGG_QA_REPORT_HOUR`
+- `target_table_day`: `AGG_QA_REPORT_DAY`
+
 #### Data flow diagram
 
 The pipeline flows data from Jira API through 3-stage processing to SQLite, with optional Vertica push.

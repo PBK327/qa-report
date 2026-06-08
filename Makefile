@@ -1,4 +1,4 @@
-.PHONY: help setup install download process process-cleaned push-vertica run clean list-sql render-sql check-jira test-connection docs
+.PHONY: help setup install download process process-cleaned push-vertica run clean list-sql render-sql check-jira test-connection docs rollup-vertica
 
 VENV_DIR ?= $(shell pwd)/../Dashboard/.venv
 PYTHON := "$(VENV_DIR)/bin/python"
@@ -18,6 +18,10 @@ help:
 	@echo "  make push-vertica      Push SQLite → Vertica"
 	@echo "  make run               Full pipeline: download → process → push-vertica"
 	@echo ""
+	@echo "Aggregations (requires Vertica in app_config.json):"
+	@echo "  make rollup-vertica    Build AGG_QA_REPORT_5_MIN/HOUR/DAY (all-time)"
+	@echo "                         Custom: make rollup-vertica PERIOD_START='2026-06-01 00:00:00' PERIOD_END='2026-07-01 00:00:00'"
+	@echo ""
 	@echo "Utilities:"
 	@echo "  make check-jira        Test Jira API connectivity"
 	@echo "  make list-sql          List available SQL templates"
@@ -31,8 +35,11 @@ help:
 	@echo "Examples:"
 	@echo "  make run"
 	@echo "  make process"
+	@echo "  make push-vertica"
+	@echo "  make rollup-vertica"
+	@echo "  make rollup-vertica PERIOD_START='2026-06-01 00:00:00' PERIOD_END='2026-07-01 00:00:00'"
 	@echo "  make list-sql"
-	@echo "  make render-sql TEMPLATE=aggregation/base_aggregation.sql TABLE=my_table PERIOD_START=2026-01-01"
+	@echo "  make render-sql TEMPLATE=aggregation/base_aggregation.sql"
 	@echo "  make check-jira"
 
 # ───────────────────────────────────────────────────────────────────────────
@@ -79,6 +86,28 @@ push-vertica:
 
 run: download process push-vertica
 	@echo "✓ Full pipeline complete"
+
+# ───────────────────────────────────────────────────────────────────────────
+# Aggregations (Vertica)
+# ───────────────────────────────────────────────────────────────────────────
+
+PERIOD_START ?= 1900-01-01 00:00:00
+PERIOD_END ?= 2100-01-01 00:00:00
+TARGET_TABLE_5MIN ?= AGG_QA_REPORT_5_MIN
+TARGET_TABLE_HOUR ?= AGG_QA_REPORT_HOUR
+TARGET_TABLE_DAY ?= AGG_QA_REPORT_DAY
+
+rollup-vertica:
+	@echo "Building 5-minute, hourly, and daily aggregations in Vertica..."
+	@echo "  Period: $(PERIOD_START) to $(PERIOD_END)"
+	$(PYTHON) -m qa_pipeline.cli run-rollup-sql \
+		--period-start "$(PERIOD_START)" \
+		--period-end "$(PERIOD_END)" \
+		--target-table-5min "$(TARGET_TABLE_5MIN)" \
+		--target-table-hour "$(TARGET_TABLE_HOUR)" \
+		--target-table-day "$(TARGET_TABLE_DAY)" \
+		--output generated/rollup_vertica.sql
+	@echo "✓ Aggregation complete. Output: generated/rollup_vertica.sql"
 
 # ───────────────────────────────────────────────────────────────────────────
 # Utilities & Diagnostics

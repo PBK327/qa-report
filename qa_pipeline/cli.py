@@ -11,6 +11,7 @@ push-vertica    Push both SQLite tables to Vertica (requires vertica config in a
 run             download → process → push-vertica in one shot.
 list-sql        List available SQL templates.
 render-sql      Render a SQL template with variable substitution.
+run-rollup-sql  Render and execute 5MIN→HOUR→DAY rollup SQL directly in Vertica.
 check-jira      Diagnose Jira API connectivity.
 show-schema     Show schema definitions and data types.
 verify-types    Verify and display data types in SQLite tables.
@@ -274,6 +275,59 @@ def cmd_render_sql(args: argparse.Namespace) -> None:
         print(rendered)
 
 
+def cmd_run_rollup_sql(args: argparse.Namespace) -> None:
+    """Render and execute the multi-grain rollup SQL in Vertica."""
+    cfg = _load_config(args)
+
+    if cfg.vertica is None:
+        raise SystemExit(
+            "Vertica config not found in app_config.json.\n"
+            "Add a 'vertica' block with host, port, database, user, password."
+        )
+
+    template_rel = args.template or "aggregation/rollup_5min_hour_day_vertica.sql"
+    template_path = (cfg.sql_template_dir / template_rel).resolve()
+    if not template_path.exists():
+        raise SystemExit(f"Template not found: {template_path}")
+    if cfg.sql_template_dir.resolve() not in template_path.parents:
+        raise SystemExit("Template path is outside the configured sql_template_dir")
+
+    sql_vars = _parse_vars(args.var or [])
+    default_vars = {
+        "agg_test_fact_relation": f"{cfg.vertica.schema}.{cfg.vertica.agg_fact_table}",
+        "defect_dim_relation": f"{cfg.vertica.schema}.{cfg.vertica.defect_dim_table}",
+        "target_schema": cfg.vertica.schema,
+        "target_table_5min": args.target_table_5min,
+        "target_table_hour": args.target_table_hour,
+        "target_table_day": args.target_table_day,
+        "period_start": args.period_start,
+        "period_end": args.period_end,
+    }
+    default_vars.update(sql_vars)
+
+    rendered = Template(template_path.read_text(encoding="utf-8")).safe_substitute(default_vars)
+
+    if args.output:
+        out = Path(args.output).resolve()
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(rendered, encoding="utf-8")
+        print(f"Rendered SQL written to: {out}")
+
+    from qa_pipeline.store.vertica import VerticaStore
+
+    vs = VerticaStore(cfg.vertica)
+    stmt_count = vs.execute_sql_script(rendered)
+    print("  ✓ Vertica rollup SQL execution complete")
+    print(f"    template: {template_rel}")
+    print(f"    source agg fact: {default_vars['agg_test_fact_relation']}")
+    print(f"    source defect dim: {default_vars['defect_dim_relation']}")
+    print(f"    target 5min: {default_vars['target_schema']}.{default_vars['target_table_5min']}")
+    print(f"    target hour: {default_vars['target_schema']}.{default_vars['target_table_hour']}")
+    print(f"    target day:  {default_vars['target_schema']}.{default_vars['target_table_day']}")
+    print(f"    period: [{default_vars['period_start']} .. {default_vars['period_end']})")
+    print(f"    statements executed: {stmt_count}")
+
+
 def cmd_check_jira(args: argparse.Namespace) -> None:
     """Diagnose Jira API connectivity."""
     cfg = _load_config(args)
@@ -387,6 +441,54 @@ def _build_parser() -> argparse.ArgumentParser:
     rs.add_argument("--output", "-o", default=None,
                     help="Output SQL file. If omitted, prints to stdout.")
 
+    # run-rollup-sql
+    rrs = sub.add_parser(
+        "run-rollup-sql",
+        help="Render and execute 5MIN→HOUR→DAY rollup SQL in Vertica",
+    )
+    rrs.add_argument(
+        "--template",
+        default="aggregation/rollup_5min_hour_day_vertica.sql",
+        help="Relative path under sql_template_dir",
+    )
+    rrs.add_argument(
+        "--target-table-5min",
+        default="AGG_QA_REPORT_5_MIN",
+        help="Target 5-minute aggregation table name",
+    )
+    rrs.add_argument(
+        "--target-table-hour",
+        default="AGG_QA_REPORT_HOUR",
+        help="Target hourly aggregation table name",
+    )
+    rrs.add_argument(
+        "--target-table-day",
+        default="AGG_QA_REPORT_DAY",
+        help="Target daily aggregation table name",
+    )
+    rrs.add_argument(
+        "--period-start",
+        required=True,
+        help="Inclusive period start timestamp, e.g. '2026-01-01 00:00:00'",
+    )
+    rrs.add_argument(
+        "--period-end",
+        required=True,
+        help="Exclusive period end timestamp, e.g. '2027-01-01 00:00:00'",
+    )
+    rrs.add_argument(
+        "--var",
+        action="append",
+        default=[],
+        help="Variable override in key=value format. Repeatable.",
+    )
+    rrs.add_argument(
+        "--output",
+        "-o",
+        default=None,
+        help="Optional path to also save rendered SQL.",
+    )
+
     # check-jira
     cj = sub.add_parser("check-jira", help="Diagnose Jira API connectivity")
     cj.add_argument("--jira-pat", default=None)
@@ -423,6 +525,7 @@ def main(argv: Optional[List[str]] = None) -> None:
         "run": cmd_run,
         "list-sql": cmd_list_sql,
         "render-sql": cmd_render_sql,
+        "run-rollup-sql": cmd_run_rollup_sql,
         "check-jira": cmd_check_jira,
         "show-schema": cmd_show_schema,
         "verify-types": cmd_verify_types,

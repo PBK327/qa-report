@@ -361,6 +361,60 @@ def _push_dataframe(
         conn.close()
 
 
+def _split_sql_statements(sql_text: str) -> List[str]:
+    """Split SQL script into executable statements, ignoring semicolons in quotes."""
+    statements: List[str] = []
+    buff: List[str] = []
+    in_single = False
+    in_double = False
+    i = 0
+    n = len(sql_text)
+
+    while i < n:
+        ch = sql_text[i]
+
+        if ch == "'" and not in_double:
+            # Handle doubled single-quote escape inside string literals.
+            if in_single and i + 1 < n and sql_text[i + 1] == "'":
+                buff.append(ch)
+                buff.append(sql_text[i + 1])
+                i += 2
+                continue
+            in_single = not in_single
+            buff.append(ch)
+            i += 1
+            continue
+
+        if ch == '"' and not in_single:
+            # Handle doubled double-quote escape in quoted identifiers.
+            if in_double and i + 1 < n and sql_text[i + 1] == '"':
+                buff.append(ch)
+                buff.append(sql_text[i + 1])
+                i += 2
+                continue
+            in_double = not in_double
+            buff.append(ch)
+            i += 1
+            continue
+
+        if ch == ";" and not in_single and not in_double:
+            stmt = "".join(buff).strip()
+            if stmt:
+                statements.append(stmt)
+            buff = []
+            i += 1
+            continue
+
+        buff.append(ch)
+        i += 1
+
+    tail = "".join(buff).strip()
+    if tail:
+        statements.append(tail)
+
+    return statements
+
+
 # ---------------------------------------------------------------------------
 # Public class
 # ---------------------------------------------------------------------------
@@ -465,3 +519,28 @@ class VerticaStore:
         dim_rows = self.push_defect_dim(store)
         test_created_rows = self.push_test_created(store)
         return fact_rows, dim_rows, test_created_rows
+
+    def execute_sql_script(self, sql_text: str) -> int:
+        """Execute a multi-statement SQL script on Vertica in one transaction.
+
+        Returns
+        -------
+        int
+            Number of non-empty SQL statements executed.
+        """
+        statements = _split_sql_statements(sql_text)
+        if not statements:
+            return 0
+
+        conn = _connect(self.cfg)
+        try:
+            cur = conn.cursor()
+            for stmt in statements:
+                cur.execute(stmt)
+            conn.commit()
+            return len(statements)
+        except Exception:
+            conn.rollback()
+            raise
+        finally:
+            conn.close()

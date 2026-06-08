@@ -1,29 +1,85 @@
--- Release readiness KPI template
--- generated_at_utc=${generated_at_utc}
-
-WITH agg AS (
-  SELECT
-    DATE_TRUNC('week', created_at) AS period,
-    COUNT(*) AS total_tests,
-    SUM(CASE WHEN outcome = 'PASS' THEN 1 ELSE 0 END) AS passed_tests,
-    SUM(CASE WHEN source_type = 'defect' AND status = 'Open' THEN 1 ELSE 0 END) AS open_defects,
-    SUM(CASE WHEN source_type = 'defect' AND severity = 'Critical' THEN 1 ELSE 0 END) AS critical_defects
-  FROM ${table}
-  WHERE created_at >= DATE '${period_start}'
-    AND created_at < DATE '${period_end}'
-  GROUP BY 1
+with test_cases as (
+	SELECT NULLIF(COUNT(qat."Issue key"), 0) as Total_Test
+	FROM omniq.qa_test_created qat
 )
-SELECT
-  period,
-  total_tests,
-  passed_tests,
-  ROUND(100.0 * passed_tests / NULLIF(total_tests, 0), 2) AS pass_rate_pct,
-  open_defects,
-  critical_defects,
-  CASE
-    WHEN critical_defects = 0 AND open_defects <= 5 AND passed_tests >= total_tests * 0.95 THEN 'GO'
-    WHEN critical_defects <= 1 AND open_defects <= 15 THEN 'CONDITIONAL_GO'
-    ELSE 'NO_GO'
-  END AS release_recommendation
-FROM agg
-ORDER BY period;
+Select
+	START_TIME,
+	updated_ts as Updated,
+	Test_Job_Name,
+	Env_Name,
+	Env_Version,
+	Sprint,
+	test_group as "Test Group",
+	test_group_feature as "Test Group Feature",
+	test_scenario as "Test Scenario",
+	auto_test_run_status as "Auto Test Run Status",
+	Bugs,
+	Status,
+	Priority,
+	Assignee,
+	fix_versions as "Fix Version/s",
+	components as "Component/s",
+	Labels,
+	bug_category as "Bug Category",
+	bug_origin  as "Bug Origin",
+	customer_name as "Customer/s Name",
+	detected_version as	"Detected Version",
+	scrum_team as "Scrum Team",
+	scope_change as "Scope Change",
+	COUNT(DISTINCT executed_test) AS total_automated_tests,
+	COUNT(DISTINCT CASE WHEN UPPER(auto_test_run_status) = 'PASS' THEN executed_test END) AS passed_tests,
+	ROUND(100.0 * COUNT(DISTINCT CASE WHEN UPPER(auto_test_run_status) = 'PASS' THEN executed_test END) / NULLIF(COUNT(DISTINCT executed_test), 0), 2) AS execution_success_rate_pct,
+	SUM(total_scenarios) AS total_scenarios,
+	ROUND(100.0 * COUNT(DISTINCT executed_test) / MAX(Total_Test), 2) AS automation_coverage_pct,
+	SUM(passed_scenarios) AS passed_scenarios,
+	SUM(failed_scenarios) AS failed_scenarios,
+	ROUND(100.0 * SUM(passed_scenarios) / NULLIF(SUM(passed_scenarios) + SUM(failed_scenarios), 0) , 2) AS automation_stability_pct,
+	COUNT(DISTINCT CASE WHEN QA_Report = 'Automation' THEN Bugs END) AS bugs_detected_by_automation,
+	COUNT(DISTINCT "Bugs") AS total_bugs_detected,
+	AVG(open_bugs) AS open_bugs_per_sprint,
+	AVG(closed_bugs) AS closed_bugs_per_sprint,
+	ROUND(100.0 * AVG(COALESCE(open_bugs, 0)) / NULLIF(AVG(COALESCE(open_bugs, 0)) + AVG(COALESCE(closed_bugs, 0)), 0), 2) AS open_bug_rate_pct,
+	ROUND(COUNT(DISTINCT CASE WHEN QA_Report = 'Automation' THEN Bugs END) * 100.0 / NULLIF(COUNT(DISTINCT executed_test), 0), 2) AS bugs_per_100_tests,
+	ROUND(AVG(resolution_days), 2) AS avg_resolution_days,
+	ROUND(AVG(total_execution_duration_min), 2) AS avg_execution_duration_min,
+	SUM(total_execution_duration_min) AS total_execution_duration_min,
+	ROUND(((ROUND(100.0 * COUNT(DISTINCT CASE WHEN UPPER(auto_test_run_status) = 'PASS' THEN executed_test END) / NULLIF(COUNT(DISTINCT executed_test), 0), 2)) * 0.40 + (100 - (100.0 * SUM(COALESCE(open_bugs, 0)) / NULLIF(SUM(COALESCE(open_bugs, 0)) + SUM(COALESCE(closed_bugs, 0)), 0))) * 0.40 +
+            (CASE WHEN AVG(resolution_days) >= 100 THEN 0 ELSE 100 - AVG(resolution_days) END) * 0.20), 2) AS executive_quality_score,
+	SUM(total_bugs) AS total_bugs,
+	SUM(regression_bugs) AS regression_bugs,
+	SUM(critical_regression_bugs) AS critical_regression_bugs,
+	SUM(open_regression_bugs) AS open_regression_bugs,
+	SUM(closed_regression_bugs) AS closed_regression_bugs,
+	SUM(customer_regression_bugs) AS customer_regression_bugs,
+	AVG(CASE WHEN bug_category = 'Regression' THEN resolution_days END) AS avg_regression_resolution_days,
+	AVG(CASE WHEN bug_category = 'Regression' AND Priority = 'Blocker' THEN resolution_days END) AS blocker_mttr,
+	COUNT(DISTINCT CASE WHEN COALESCE(fix_versions,'') <> '' THEN fix_versions END) AS total_releases,
+	COUNT(DISTINCT CASE WHEN COALESCE(fix_versions,'') <> '' AND bug_category='Regression' THEN fix_versions END) AS failed_releases,
+	COUNT(DISTINCT CASE WHEN COALESCE(fix_versions,'') <> '' THEN fix_versions END)::numeric / NULLIF(COUNT(DISTINCT CASE WHEN COALESCE(fix_versions,'') <> '' THEN DATE_TRUNC('month',bug_resolved) END),0) AS deployments_per_month,
+	COUNT(DISTINCT CASE WHEN sprint_status = 'Completed' THEN Sprint END) completed_sprints
+From omniq.AGG_QA_REPORT_DAY FAGG
+left join test_cases qat on 1 = 1
+Group By
+	START_TIME,
+	updated_ts,
+	Test_Job_Name,
+	Env_Name,
+	Env_Version,
+	Sprint,
+	test_group,
+	test_group_feature,
+	test_scenario,
+	auto_test_run_status,
+	Bugs,
+	Status,
+	Priority,
+	Assignee,
+	fix_versions,
+	components,
+	Labels,
+	bug_category,
+	bug_origin,
+	customer_name,
+	detected_version,
+	scrum_team,
+	scope_change
