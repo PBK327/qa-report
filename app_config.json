@@ -10,12 +10,12 @@
   "default_list_delimiter": " | ",
   "vertica": {
     "_comment": "Remove this block or leave host empty to disable Vertica push",
-    "host": "",
+    "host": "172.29.138.124",
     "port": 5433,
     "database": "vdb",
     "user": "dbadmin",
-    "password": "",
-    "schema": "public",
+    "password": "radcom",
+    "schema": "omniq",
     "agg_fact_table": "qa_agg_test_fact",
     "defect_dim_table": "qa_defect_dim",
     "test_created_table": "qa_test_created"

@@ -1,0 +1,1887 @@
+[
+    {
+      "id": "DASHLET_TEMPLATES_HIERARCHY",
+      "hierarchy": [
+        {
+          "label": "Network",
+          "children": [
+            {
+              "label": "Packet Core Control Plane",
+              "children": [
+                {
+                  "label": "KPI by Dimension and Time (Line)",
+                  "templateId": "kpiAnalysisByDimensionAndTime"
+                },
+                {
+                  "label": "KPI by Dimension and Time Dual Axis (Dual)",
+                  "templateId": "kpiAnalysisByDimensionAndTimeDualAxis"
+                },
+                {
+                  "label": "KPI by Dimension and Time Multiselect (Line)",
+                  "templateId": "kpiAnalysisByDimensionAndTimeMultiselect"
+                },
+                {
+                  "label": "KPI by Dimension (Bar)",
+                  "templateId": "kpiAnalysisByDimension"
+                },
+                {
+                  "label": "KPI by Dimension (Stats)",
+                  "templateId": "StatsDashboardPanelCp"
+                },
+                {
+                  "label": "Release Cause Analysis by Time (Line)",
+                  "templateId": "releaseCauseAnalysisByTime"
+                },
+                {
+                  "label": "Release Cause Analysis (Bar)",
+                  "templateId": "releaseCauseAnalysis"
+                },
+                {
+                  "label": "Release Cause Analysis Table",
+                  "templateId": "releaseCauseAnalysisByTimeTableStandalone"
+                }                
+              ]
+            },
+            {
+              "label": "PS Access",
+              "children": [
+                {
+                  "label": "KPI by Dimension (Line)",
+                  "templateId": "kpiAnalysisByDimensionPSAccessLine"
+                },
+                {
+                  "label": "KPI by Dimension (Bar)",
+                  "templateId": "kpiAnalysisByDimensionPSAccess"
+                },
+                {
+                  "label": "KPI by Dimension (Stacked Bar)",
+                  "templateId": "kpiAnalysisByDimensionPSAccessSBar"
+                },
+                {
+                  "label": "KPI by Dimension (Table)",
+                  "templateId": "kpiAnalysisByDimensionPSAccessTable"
+                },
+                {
+                  "label": "KPI by Dimension (Stats)",
+                  "templateId": "kpiAnalysisByDimensionPSAccessStats"
+                },
+                {
+                  "label": "KPI by Dimension Multiselect (Line)",
+                  "templateId": "kpiAnalysisByDimensionPSAccessMultiSelectLine"
+                },
+                {
+                  "label": "KPI by Dimension (Dual chart)",
+                  "templateId": "kpiAnalysisByDimensionPSAccessDualchart"
+                },
+                {
+                  "label": "KPI by Dimension (GeoMAP)",
+                  "templateId": "kpiAnalysisByDimensionPSAccessMAP"
+                }                
+              ]
+            },
+            {
+              "label": "User Plane",
+              "children": [
+                {
+                  "label": "KPI by Dimension and Time (Line)",
+                  "templateId": "kpiAnalysisByDimensionAndTimeUP"
+                },
+                {
+                  "label": "KPI by Dimension (Bar)",
+                  "templateId": "kpiAnalysisByDimensionUP"
+                },
+                {
+                  "label": "KPI by Network Element and Time (Line)",
+                  "templateId": "kpiAnalysisByNetworkElementAndTimeUP"
+                },
+                {
+                  "label": "KPI by Network Element (Bar)",
+                  "templateId": "kpiAnalysisByNetworkElementUP"
+                },
+                {
+                  "label": "Release Cause Analysis by Time (Line)",
+                  "templateId": "releaseCauseAnalysisByTimeUP"
+                },
+                {
+                  "label": "Release Cause Analysis (Bar)",
+                  "templateId": "releaseCauseAnalysisUP"
+                }
+              ]
+            },
+            {
+              "label": "Data Volume",
+              "children": [
+                {
+                  "label": "Data Volume over time (Line)",
+                  "templateId": "kpiDataVolumeovertime"
+                },
+                {
+                  "label": "Data Volume (Bar) ",
+                  "templateId": "kpiDataVolumebydimension"
+                }
+              ]
+            },
+            {
+              "label": "Voice over LTE/NR/RCS/IMS",
+              "children": [
+                {
+                  "label": "RCS Call KPIs per Dimension over Time (Line)",
+                  "templateId": "kpiCallPerDimensionOverTimeVolte"
+                },
+                {
+                  "label": "RCS Call KPIs per dimension (Bar)",
+                  "templateId": "kpiCallPerDimensionVolte"
+                },
+                {
+                  "label": "Call KPIs per Dimension over Time (Line)",
+                  "templateId": "kpiCallPerDimensionOverTimeVolteDm"
+                },
+                {
+                  "label": "Call KPIs per Dimension (Bar)",
+                  "templateId": "kpiCallPerDimensionVolteDm"
+                },
+                {
+                  "label": "Registration KPIs per dimension over time (Line)",
+                  "templateId": "kpiRegPerDimensionOverTimeVolte"
+                },
+                {
+                  "label": "Registration KPIs per dimension (Bar)",
+                  "templateId": "kpiRegPerDimensionVolte"
+                }
+              ]
+            },
+            {
+              "label": "5G SA HTTP2",
+              "children": [
+                {
+                  "label": "KPI by Dimension and Time (Line)",
+                  "templateId": "5Ghttp2kpiByDmTm"
+                },
+                {
+                  "label": "Release Cause Analysis by Time (Line)",
+                  "templateId": "5Ghttp2releaseCauseAnalysisByTime"
+                },
+                {
+                  "label": "Problem Description Analysis by Time (Line)",
+                  "templateId": "5Ghttp2ProblemDescByTime"
+                }
+              ]
+            },
+            {
+              "label": "5G SA NGAP",
+              "children": [
+                {
+                  "label": "KPI by Dimension and Time (Line)",
+                  "templateId": "5GngapkpiByDmTm"
+                },
+                {
+                  "label": "Release Cause Analysis by Time (Line)",
+                  "templateId": "5GngapreleaseCauseAnalysisByTime"
+                }
+              ]
+            },
+            {
+              "label": "2G 3G Core",
+              "children": [
+                {
+                  "label": "KPI by Dimension and Time (Line)",
+                  "templateId": "kpiAnalysisByDimensionAndTime2g3gCore"
+                },
+                {
+                  "label": "KPI by Dimension (Bar)",
+                  "templateId": "kpiAnalysisByDimension2g3gCore"
+                },
+                {
+                  "label": "KPI by Network Element and Time (Line)",
+                  "templateId": "kpiAnalysisByNetworkElementAndTime2g3gCore"
+                },
+                {
+                  "label": "KPI by Network Element (Bar)",
+                  "templateId": "kpiAnalysisByNetworkElement2g3gCore"
+                },
+                {
+                  "label": "Release Cause Analysis by Time (Line)",
+                  "templateId": "releaseCauseAnalysisByTime2g3gCore"
+                },
+                {
+                  "label": "Release Cause Analysis (Bar)",
+                  "templateId": "releaseCauseAnalysis2g3gCore"
+                }
+              ]
+            },
+            {
+              "label": "2G 3G Access",
+              "children": [
+                {
+                  "label": "KPI by Dimension and Time (Line)",
+                  "templateId": "kpiAnalysisByDimensionAndTime2g3gAccess"
+                },
+                {
+                  "label": "KPI by Dimension (Bar)",
+                  "templateId": "kpiAnalysisByDimension2g3gAccess"
+                },
+                {
+                  "label": "KPI by Network Element and Time (Line)",
+                  "templateId": "kpiAnalysisByNetworkElementAndTime2g3gAccess"
+                },
+                {
+                  "label": "KPI by Network Element (Bar)",
+                  "templateId": "kpiAnalysisByNetworkElement2g3gAccess"
+                },
+                {
+                  "label": "Release Cause Analysis by Time (Line)",
+                  "templateId": "releaseCauseAnalysisByTime2g3gAccess"
+                },
+                {
+                  "label": "Release Cause Analysis (Bar)",
+                  "templateId": "releaseCauseAnalysis2g3gAccess"
+                }
+              ]
+            },
+            {
+              "label": "RAN Performance",
+              "children": [
+                {
+                  "label": "RSRP Performance KPI by Dimension and Time (Line)",
+                  "templateId": "RSRPPerformancebyDmTm"
+                },
+                {
+                  "label": "RSRP Performance KPI by Dimension (Bar)",
+                  "templateId": "RSRPPerformancebyDm"
+                },
+				{
+                  "label": "RSRP Performance (Stats)",
+                  "templateId": "RSRPPerformancebyDmStats"
+                },
+                {
+                  "label": "RSRQ Performance KPI by Dimension and Time (Line)",
+                  "templateId": "RSRQPerformancebyDmTm"
+                },
+                {
+                  "label": "RSRQ Performance KPI by Dimension (Bar)",
+                  "templateId": "RSRQPerformancebyDm"
+                },
+				{
+                  "label": "RSRQ Performance (Stats)",
+                  "templateId": "RSRQPerformancebyDmStats"
+                },
+                {
+                  "label": "RRC Connection KPI by Dimension and Time (Line)",
+                  "templateId": "RRCConnectionbyDmTm"
+                },
+                {
+                  "label": "RRC Connection KPI by Dimension (Bar)",
+                  "templateId": "RRCConnectionbyDm"
+                },
+				{
+                  "label": "RRC Connection (Stats)",
+                  "templateId": "RRCConnectionbyDmStats"
+                },
+                {
+                  "label": "RLF KPI by Dimension and Time (Line)",
+                  "templateId": "RLFbyDMTM"
+                },
+                {
+                  "label": "RLF KPI by Dimension (Bar)",
+                  "templateId": "RLFbyDM"
+                },
+                {
+                  "label": "Inter-site Handover KPI by Dimension and Time (Line)",
+                  "templateId": "X2HOKPIsbyDimensionandTime"
+                },
+                {
+                  "label": "Inter-site Handover KPI by Dimension (Bar)",
+                  "templateId": "X2HOKPIsbyDimension"
+                },
+                {
+                  "label": "SgNB X2AP KPI by Dimension and Time (Line)",
+                  "templateId": "SgNBX2APKPIsbyDimensionandTime"
+                },
+                {
+                  "label": "SgNB X2AP KPI by Dimension (Bar)",
+                  "templateId": "SgNBX2APKPIsbyDimension"
+                }
+              ]
+            },
+            {
+              "label": "RAN Performance New",
+              "children": [
+                  {
+                      "label": "RSRP Performance KPI by Dimension and Time (Line)",
+                      "templateId": "RSRPPerformanceNewbyDmTm"
+                  },
+                  {
+                      "label": "RSRP Performance KPI by Dimension (Bar)",
+                      "templateId": "RSRPPerformanceNewbyDm"
+                  },
+                  {
+                      "label": "RSRQ Performance KPI by Dimension and Time (Line)",
+                      "templateId": "RSRQPerformanceNewbyDmTm"
+                  },
+                  {
+                      "label": "RSRQ Performance KPI by Dimension (Bar)",
+                      "templateId": "RSRQPerformanceNewbyDm"
+                  },
+                  {
+                      "label": "RRC Connection KPI by Dimension and Time (Line)",
+                      "templateId": "RRCConnectionNewbyDmTm"
+                  },
+                  {
+                      "label": "RRC Connection KPI by Dimension (Bar)",
+                      "templateId": "RRCConnectionNewbyDm"
+                  },
+                  {
+                      "label": "RLF KPI by Dimension and Time (Line)",
+                      "templateId": "RLFNewbyDMTM"
+                  },
+                  {
+                      "label": "RLF KPI by Dimension (Bar)",
+                      "templateId": "RLFNewbyDM"
+                  }
+              ]
+          },
+            {
+              "label": "Diameter",
+              "children": [
+                {
+                  "label": "Diameter KPI by Dimension Over Time (Line)",
+                  "templateId": "DiameterkpiAggByTime"
+                },
+                {
+                  "label": "Diameter KPI by Dimension Over Time (Stacked Bar)",
+                  "templateId": "DiameterkpiAggByTimeSBAR"
+                },
+                {
+                  "label": "Diameter KPI by Dimension (Bar)",
+                  "templateId": "DiameterkpiAggByTimeBAR"
+                },
+                {
+                  "label": "Diameter KPI by Dimension (Table)",
+                  "templateId": "DiameterkpiAggByTimeTable"
+                },
+                {
+                  "label": "Diameter KPI Overview (Stats)",
+                  "templateId": "DiameterkpiAggByTimeStats"
+                },
+                {
+                  "label": "Diameter Multi-KPI Over Time (Line)",
+                  "templateId": "DiameterkpiAggByTimeMultiSelectLine"
+                },
+                {
+                  "label": "Diameter Dual-KPI  Over Time (Dual Chart)",
+                  "templateId": "DiameterkpiAggByTimeDualchart"
+                }
+              ]
+            },
+            {
+              "label": "DIAMETER (old)",
+              "children": [
+                {
+                  "label": "Diameter Average Response Time (Line)",
+                  "templateId": "diameterAverageResponseTime"
+                },
+                {
+                  "label": "Diameter Error Code Distribution (Stacked Bar)",
+                  "templateId": "diameterErrorCodeDistribution"
+                },
+                {
+                  "label": "Diameter Response Count By Type (Stacked Bar)",
+                  "templateId": "diameterResponseCountByType"
+                },
+                {
+                  "label": "Diameter Peak Response Time (Line)",
+                  "templateId": "diameterPeakResponseTime"
+                },
+                {
+                  "label": "Diameter Retransmission Ratio (Line)",
+                  "templateId": "diameterRetransmissionRatio"
+                },
+                {
+                  "label": "Diameter Request Count (Line)",
+                  "templateId": "diameterRequestCount"
+                }
+              ]
+            },
+            {
+              "label": "DNS",
+              "children": [
+                {
+                  "label": "DNS KPI by Dimension Over Time (Line)",
+                  "templateId": "kpiAnalysisByDimensionDNSLine"
+                },
+                {
+                  "label": "DNS KPI by Dimension (Bar)",
+                  "templateId": "kpiAnalysisByDimensionDNS"
+                },
+                {
+                  "label": "DNS KPI by Dimension Over Time (Stacked Bar)",
+                  "templateId": "kpiAnalysisByDimensionDNSSBar"
+                },
+                {
+                  "label": "DNS KPI by Dimension (Table)",
+                  "templateId": "kpiAnalysisByDimensionDNSTable"
+                },
+                {
+                  "label": "DNS KPI Overview (Stats)",
+                  "templateId": "kpiAnalysisByDimensionDNSStats"
+                },
+                {
+                  "label": "DNS Multi-KPI Over Time (Line)",
+                  "templateId": "kpiAnalysisByDimensionDNSMultiSelectLine"
+                },
+                {
+                  "label": "DNS Dual-KPI Over Time (Dual Chart)",
+                  "templateId": "kpiAnalysisByDimensionDNSDualchart"
+                }                
+              ]
+            },
+            {
+              "label": "DNS (Old)",
+              "children": [
+                {
+                  "label": "DNS Average Response Time (Line)",
+                  "templateId": "dnsAverageResponseTime"
+                },
+                {
+                  "label": "DNS Error Code Distribution (Stacked Bar)",
+                  "templateId": "dnsErrorCodeDistribution"
+                },
+                {
+                  "label": "DNS Response Count By Type (Stacked Bar)",
+                  "templateId": "dnsResponseCountByType"
+                },
+                {
+                  "label": "DNS Peak Response Time (Line)",
+                  "templateId": "dnsPeakResponseTime"
+                },
+                {
+                  "label": "DNS Retransmission Ratio (Line)",
+                  "templateId": "dnsRetransmissionRatio"
+                },
+                {
+                  "label": "DNS Request Count (Line)",
+                  "templateId": "dnsRequestCount"
+                }
+              ]
+            },
+            {
+              "label": "SIP",
+              "children": [
+                {
+                  "label": "SIP Voice",
+                  "children": [
+                    {
+                      "label": "SIP Voice KPI By Time (Line)",
+                      "templateId": "SIPVoicekpiAGGByTime",
+                      "children": []
+                    },
+                    {
+                      "label": "SIP Voice KPI By Time (Stacked Bar)",
+                      "templateId": "SIPVoicekpiAGGByTimeSBAR",
+                      "children": []
+                    },
+                    {
+                      "label": "SIP Voice KPI By Dimension (Bar)",
+                      "templateId": "SIPVoicekpiAGGByTimeBAR",
+                      "children": []
+                    },
+                    {
+                      "templateId": "SIPVoiceSTAT",
+                      "label": "SIP Voice (Stats)",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "label": "SIP Messaging",
+                  "children": [
+                    {
+                      "templateId": "SIPMessageAggkpiByTime",
+                      "label": "SIP Message KPI By Time(Line)",
+                      "children": []
+                    },
+                    {
+                      "templateId": "SIPMessageAggkpiByTimeSBAR",
+                      "label": "SIP Message KPI By Time(Stacked Bar)",
+                      "children": []
+                    },
+                    {
+                      "templateId": "SIPMessageAggkpiByTimeBAR",
+                      "label": "SIP Message KPI By Dimension(Bar)",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "label": "SIP Register",
+                  "children": [
+                    {
+                      "label": "SIP Registration KPI By Time(Line)",
+                      "templateId": "SIPRegkpiAggByTime",
+                      "children": []
+                    },
+                    {
+                      "label": "SIP Registration KPI By Time(Stacked Bar)",
+                      "templateId": "SIPRegkpiAggByTimeSBAR",
+                      "children": []
+                    },
+                    {
+                      "label": "SIP Registration KPI By Dimension(Bar)",
+                      "templateId": "SIPRegkpiAggByTimeBAR",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "label": "SIP Method",
+                  "children": [
+                    {
+                      "label": "Notify",
+                      "children": [
+                        {
+                          "templateId": "SIPNotifyAggkpiByTime",
+                          "label": "SIP Notify KPI By Time(Line)",
+                          "children": []
+                        },
+                        {
+                          "templateId": "SIPNotifyAggkpiByTimeSBAR",
+                          "label": "SIP Notify KPI By Time(Stacked Bar)",
+                          "children": []
+                        },
+                        {
+                          "templateId": "SIPNotifyAggkpiByTimeBAR",
+                          "label": "SIP Notify KPI By Dimension(Bar)",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "label": "Publish",
+                      "children": [
+                        {
+                          "templateId": "SIPPublishAggkpiByTime",
+                          "label": "SIP Publish KPI By Time(Line)",
+                          "children": []
+                        },
+                        {
+                          "templateId": "SIPPublishAggkpiByTimeSBAR",
+                          "label": "SIP Publish KPI By Time(Stacked Bar)",
+                          "children": []
+                        },
+                        {
+                          "templateId": "SIPPublishAggkpiByTimeBAR",
+                          "label": "SIP Publish KPI By Dimension(Bar)",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "label": "Subscribe",
+                      "children": [
+                        {
+                          "templateId": "SIPSubscribeAggkpiByTime",
+                          "label": "SIP Subscribe KPI By Time(Line)",
+                          "children": []
+                        },
+                        {
+                          "templateId": "SIPSubscribeAggkpiByTimeSBAR",
+                          "label": "SIP Subscribe KPI By Time(Stacked Bar)",
+                          "children": []
+                        },
+                        {
+                          "templateId": "SIPSubscribeAggkpiByTimeBAR",
+                          "label": "SIP Subscribe KPI By Dimension(Bar)",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "label": "SIP Reason and Protocol",
+                  "children": [
+                    {
+                      "label": "SIP Reason by Dimension (Bar)",
+                      "templateId": "SIPREASONbyDm"
+                    },
+                    {
+                      "label": "SIP Reason by Dimension over Time (Stacked Bar)",
+                      "templateId": "SIPREASONbyTm"
+                    },
+                    {
+                      "label": "SIP Reason Protocol by Dimension (Bar)",
+                      "templateId": "SIPREASONPROTOCOLbyDm"
+                    },
+                    {
+                      "label": "SIP Reason Protocol by Dimension and Time (Stacked Bar)",
+                      "templateId": "SIPREASONPROTOCOLbyTm"
+                    }
+                  ]
+                },
+                {
+                  "label": "SIP (Old)",
+                  "children": [
+                    {
+                      "label": "SIP KPI by Network Element and Time (Line)",
+                      "templateId": "SIPkpiByNtwrkNdTm"
+                    },
+                    {
+                      "label": "SIP KPI by Network Element (Bar)",
+                      "templateId": "SIPkpiByNtwrk"
+                    },
+                    {
+                      "label": "SIP Release Cause by Time (Stacked Bar)",
+                      "templateId": "SIPRCbyTm"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "label": "TCP",
+              "children": [
+                {
+                  "label": "TCP KPI By Time(Line)",
+                  "templateId": "TCPkpiByAggTime",
+                  "children": []
+                },
+                {
+                  "label": "TCP KPI By Time(Stacked Bar)",
+                  "templateId": "TCPkpiByAggTimeSBAR",
+                  "children": []
+                },
+                {
+                  "label": "TCP KPI By Dimension(Bar)",
+                  "templateId": "TCPkpiByAggTimeBAR",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "label": "Camel",
+              "children": [
+                {
+                  "label": "Camel KPI By Time(Line)",
+                  "templateId": "CamelkpiAggByTime",
+                  "children": []
+                },
+                {
+                  "label": "Camel KPI By Time(Stacked Bar)",
+                  "templateId": "CamelkpiAggByTimeSBAR",
+                  "children": []
+                },
+                {
+                  "label": "Camel KPI By Dimension(Bar)",
+                  "templateId": "CamelkpiAggByTimeBAR",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "label": "RTP",
+              "children": [
+                
+                    {
+                      "templateId": "RTPkpiByTime",
+                      "label": "RTP KPI by Time (Line)",
+                      "children": []
+                    },
+                    {
+                      "templateId": "RTPkpiByDmTm",
+                      "label": "RTP KPI by Dimension and Time (Line)",
+                      "children": []
+                    },
+                    {
+                      "templateId": "RTPkpiByDm",
+                      "label": "RTP KPI by Dimension (Bar)",
+                      "children": []
+                    },
+                    {
+                      "templateId": "RTPkpiByNwTm",
+                      "label": "RTP KPI by Network Element and Time (Line)",
+                      "children": []
+                    },
+                    {
+                      "templateId": "RTPkpiByNw",
+                      "label": "RTP KPI by Network Element (Bar)",
+                      "children": []
+                    }
+              
+              ]
+            },
+            {
+              "label": "RTCP",
+              "children": [
+                {
+                  "label": "RTCP KPI by Time (Line)",
+                  "templateId": "RTCPkpiByTime"
+                },
+                {
+                  "label": "RTCP KPI by Dimension and Time (Line)",
+                  "templateId": "RTCPkpiByDmTm"
+                },
+                {
+                  "label": "RTCP KPI by Dimension (Bar)",
+                  "templateId": "RTCPkpiByDm"
+                },
+                {
+                  "label": "RTCP KPI by Network Element and Time (Line)",
+                  "templateId": "RTCPkpiByNwTm"
+                },
+                {
+                  "label": "RTCP KPI by Network Element (Bar)",
+                  "templateId": "RTCPkpiByNw"
+                }
+              ]
+            },
+            {
+              "label": "MSRP",
+              "children": [
+                {
+                  "label": "MSRP Session KPI by Network Element (Bar)",
+                  "templateId": "MSRPSessionkpiByNw"
+                },
+                {
+                  "label": "MSRP Session KPI by Network Element and Time (Line)",
+                  "templateId": "MSRPSessionkpiByNwTm"
+                },
+                {
+                  "label": "MSRP Procedure KPI by Network Element (Bar)",
+                  "templateId": "MSRPProcedurekpiByNw"
+                },
+                {
+                  "label": "MSRP Procedure KPI by Network Element and Time (Line)",
+                  "templateId": "MSRPProcedurekpiByNwTm"
+                }
+              ]
+            },
+            {
+              "label": "Stat",
+              "children": [
+                {
+                  "label": "Stat panel Sip",
+                  "templateId": "statPanelSip"
+                },
+                {
+                  "label": "Stat panel CP",
+                  "templateId": "StatsDashboardPanelCp"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Subscriber",
+          "children": [
+            {
+              "label": "Subscriber Voice",
+              "children": [
+                {
+                  "templateId": "SubscriberVoiceKPIByTimeLine",
+                  "label": "Subscriber Voice KPI By Time(Line)",
+                  "children": []
+                },
+                {
+                  "templateId": "SubscriberVoiceKPIByTimeStackedBar",
+                  "label": "Subscriber Voice KPI By Time(Stacked Bar)",
+                  "children": []
+                },
+                {
+                  "templateId": "SubscriberVoiceKPIByDimensionBar",
+                  "label": "Subscriber Voice KPI By Dimension(Bar)",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "label": "Subscriber IMS Voice Access Analysis",
+              "children": [
+                {
+                  "label": "Subscriber IMS Voice Access KPI By Time(Line)",
+                  "templateId": "kpiSubscriberCellLine"
+                },
+                {
+                  "label": "Subscriber IMS Voice Access KPI By Time(Stacked Bar)",
+                  "templateId": "kpiSubscriberCellSB"
+                },
+                {
+                  "label": "Subscriber IMS Voice Access KPI By Time(Bar)",
+                  "templateId": "kpiSubscriberCellB"
+                }
+              ]
+            },
+            {
+              "label": "User Plane Subscriber Experience",
+              "children": [
+                {
+                  "label": "KPI By Time(Line)",
+                  "templateId": "kpiSubscriberExperienceovertimeLine"
+                },
+                {
+                  "label": "KPI By Time(Stacked Bar)",
+                  "templateId": "kpiSubscriberExperienceovertimeSBar"
+                },
+                {
+                  "label": "KPI By Dimension(Bar)",
+                  "templateId": "kpiSubscriberExperienceBar"
+                },
+                {
+                  "label": "KPI by Time(Dual Axis)",
+                  "templateId": "kpiSubscriberExperienceovertimeDual"
+                },
+                {
+                  "label": "KPI by Time Multiselect(Line)",
+                  "templateId": "kpiSubscriberExperienceMultiselect"
+                },
+                {
+                  "label": "KPI Stats",
+                  "templateId": "kpiSubscriberExperienceStats"
+                }
+              ]
+            },
+            {
+              "label": "Impact Analysis",
+              "children": [
+                {
+                  "label": "Impacted Subscriber KPI by Time (Dual)",
+                  "templateId": "IMPAggkpiByTimeDUAL",
+                  "children": []
+                },
+                {
+                  "label": "Impacted Subscriber KPI by Time (Line)",
+                  "templateId": "IMPAggkpiByTimeLINE",
+                  "children": []
+                },
+                {
+                  "label": "Impacted Subscriber KPI By Time (Table)",
+                  "templateId": "IMPAggkpiByTimeTable",
+                  "children": []
+                }
+              ]
+            },			
+            {
+                  "label": "RTP Interval",
+                  "children": [
+                    {
+                      "templateId": "RTPIntervalsKPIByTime",
+                      "label": "KPI By Time(Line)",
+                      "children": []
+                    },
+                    {
+                      "templateId": "RTPIntervalsKPIByTimeSBAR",
+                      "label": "KPI By Time(Stacked Bar)",
+                      "children": []
+                    },
+                    {
+                      "templateId": "RTPIntervalsKPIByDimensionBAR",
+                      "label": "KPI By Dimension(Bar)",
+                      "children": []
+                    },
+					{
+                      "templateId": "RTPIntervalsKPIByTimeMultiSelect",
+                      "label": "KPI By Time Multiselect(Line)",
+                      "children": []
+                    },
+					{
+                      "templateId": "RTPIntervalsKPIByTimeDualAxis",
+                      "label": "KPI By Time(Dual Axis)",
+                      "children": []
+                    },
+                    {
+                      "templateId": "RTPIntervalsKPIByTable",
+                      "label": "KPI By Time (Table)",
+                      "children": []
+                    },
+                    {
+                      "label": "KPI Stats",
+                      "templateId": "RTPIntervalsKPIByTimeStat",
+                      "children": []
+                    }
+                  ]
+                },
+            {
+              "label": "Mobile Voice Access Analysis",
+              "children": [
+                {
+                  "label": "KPI By Time(Line)",
+                  "templateId": "kpiMobileVoiceAccessByDimensionAndTimeLine",
+                  "children": []
+                },
+                {
+                  "label": "KPI By Time(Stacked Bar)",
+                  "templateId": "kpiMobileVoiceAccessByDimensionAndTimeSBar",
+                  "children": []
+                },
+                {
+                  "label": "KPI By Dimension(Bar)",
+                  "templateId": "kpiMobileVoiceAccessByDimensionBar",
+                  "children": []
+                },
+                {
+                  "label": "KPI By Time Multiselect(Line)",
+                  "templateId": "kpiMobileVoiceAccessByTimeMultiSelect",
+                  "children": []
+                },
+                {
+                  "label": "KPI By Time(Dual Axis)",
+                  "templateId": "kpiMobileVoiceAccessByTimeDualAxis",
+                  "children": []
+                },
+                {
+                  "label": "KPI By Time (Table)",
+                  "templateId": "kpiMobileVoiceAccessByTimeTable",
+                  "children": []
+                },
+				{
+                 "label" : "KPI Stats",
+				 "templateId" : "kpiMobileVoiceAccessStats",
+				  "children" : []
+                }
+              ]
+            },
+            {
+              "label": "SIP Registration Access Analysis",
+              "children": [
+                {
+                  "label": "KPI By Time(Line)",
+                  "templateId": "kpiSIPRegAccessByTimeLine",
+                  "children": []
+                },
+                {
+                  "label": "KPI By Time(Stacked Bar)",
+                  "templateId": "kpiSIPRegAccessByDimensionAndTimeSBar",
+                  "children": []
+                },
+                {
+                  "label": "KPI By Dimension(Bar)",
+                  "templateId": "kpiSIPRegAccessByDimensionBar",
+                  "children": []
+                },
+                {
+                  "label": "KPI By Time Multiselect(Line)",
+                  "templateId": "kpiSIPRegAccessByTimeMultiSelect",
+                  "children": []
+                },
+                {
+                  "label": "KPI By Time(Dual Axis)",
+                  "templateId": "kpiSIPRegAccessByTimeDualAxis",
+                  "children": []
+                },
+                {
+                  "label": "KPI By Time (Table)",
+                  "templateId": "kpiSIPRegAccessByTimeTable",
+                  "children": []
+                },
+                {
+                  "label": "KPI Stats",
+                  "templateId": "kpiSIPRegAccessStats",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Emergency",
+          "children": [
+            {
+              "label": "Mission Critical Services",
+              "children": [
+                {
+                  "label": "Mission Critical KPIs By Network Element and Time (Line)",
+                  "templateId": "McpttNetworkandTime"
+                },
+                {
+                  "label": "Mission Critical KPIs By Network Element (Bar)",
+                  "templateId": "McpttNetwork"
+                },
+                {
+                  "label": "Mission Critical Release Cause Analysis By Time (Line)",
+                  "templateId": "McpttRCbyTime"
+                }
+              ]
+            },
+            {
+              "label": "SIP-E911",
+              "children": [
+                {
+                  "label": "SIP-E911 KPI by Network Element and Time (Line)",
+                  "templateId": "SIP911kpiByNtwrkNdTm"
+                },
+                {
+                  "label": "SIP-E911 KPI by Network Element (Bar)",
+                  "templateId": "SIP911kpiByNtwrk"
+                },
+                {
+                  "label": "SIP-E911 Release Cause by Time (Stacked Bar)",
+                  "templateId": "SIP911RCbyTm"
+                }
+              ]
+            },
+            {
+              "label": "SIP-MNRC",
+              "children": [
+                {
+                  "label": "SIP-MNRC KPI by Network Element and Time (Line)",
+                  "templateId": "SIPMNRCkpiByNtwrkNdTm"
+                },
+                {
+                  "label": "SIP-MNRC KPI by Network Element (Bar)",
+                  "templateId": "SIPMNRCkpiByNtwrk"
+                },
+                {
+                  "label": "SIP-MNRC Release Cause by Time (Stacked Bar)",
+                  "templateId": "SIPMNRCRCbyTm"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Roaming",
+          "children": [
+            {
+              "label": "General Roaming Statistics",
+              "children": [
+                {
+                  "label": "General Roaming Statistics by Time(Line)",
+                  "templateId": "kpiAnalysisByDimensionAndTimeRoamingGeneric",
+                  "children": []
+                },
+                {
+                  "label": "General Roaming Statistics by Time(Stacked Bar)",
+                  "templateId": "kpiAnalysisByDimensionAndTimeRoamingGenericSBAR",
+                  "children": []
+                },
+                {
+                  "label": "General Roaming Statistics by Dimension(Bar)",
+                  "templateId": "kpiAnalysisByDimensionRoamingGeneric",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "label": "Roaming Network Connection",
+              "children": [
+                {
+                  "label": "Roaming Diameter",
+                  "children": [
+                    {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingDiameter",
+                         "label" : "KPI by Time(Line)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingDiameterSBAR",
+                         "label" : "KPI by Time(Stacked Bar)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionRoamingDiameter",
+                         "label" : "KPI by Dimension(Bar)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "releaseCauseAnalysisByTimeRoamingDiameter",
+                         "label" : "Release Cause Analysis by Time (Line)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingDiameterMultiselect",
+                         "label" : "KPI by Time Multiselect(Line)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingDiameterTable",
+                         "label" : "KPI by Time(Table)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionRoamingDiameterStats",
+                         "label" : "KPI (Stats)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingDiameterGeoMAP",
+                         "label" : "KPI by Dimension(GeoMAP)",
+                         "children" : [
+
+                         ]
+                     },
+					 {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingDiameterNode",
+                         "label" : "Node KPI by Time(Line)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingDiameterSBARNode",
+                         "label" : "Node KPI by Time(Stacked Bar)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionRoamingDiameterNode",
+                         "label" : "Node KPI by Dimension(Bar)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingDiameterMultiselectNode",
+                         "label" : "Node KPI by Time Multiselect(Line)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingDiameterTableNode",
+                         "label" : "Node KPI by Time(Table)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionRoamingDiameterStatsNode",
+                         "label" : "Node KPI (Stats)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingDiameterGeoMAPNode",
+                         "label" : "Node KPI by Dimension(GeoMAP)",
+                         "children" : [
+
+                         ]
+                     }
+					
+                  ]
+                },
+                {
+                  "label": "Roaming MAP(Mobility)",
+                  "children": [
+					{
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingMap",
+                         "label" : "KPI by Time(Line)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingMapSBAR",
+                         "label" : "KPI by Time(Stacked Bar)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionRoamingMap",
+                         "label" : "KPI by Dimension(Bar)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "releaseCauseAnalysisByTimeRoamingMap",
+                         "label" : "Release Cause Analysis by Time (Line)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingMapMultiselect",
+                         "label" : "KPI by Time Multiselect(Line)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingMapTable",
+                         "label" : "KPI by Time(Table)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionRoamingMapStats",
+                         "label" : "KPI (Stats)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingMapGeoMAP",
+                         "label" : "KPI by Dimension(GeoMAP)",
+                         "children" : [
+
+                         ]
+                     },
+					 {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingMapNode",
+                         "label" : "Node KPI by Time(Line)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingMapSBARNode",
+                         "label" : "Node KPI by Time(Stacked Bar)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionRoamingMapNode",
+                         "label" : "Node KPI by Dimension(Bar)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingMapMultiselectNode",
+                         "label" : "Node KPI by Time Multiselect(Line)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingMapTableNode",
+                         "label" : "Node KPI by Time(Table)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionRoamingMapStatsNode",
+                         "label" : "Node KPI (Stats)",
+                         "children" : [
+
+                         ]
+                     },
+                     {
+                         "templateId" : "kpiAnalysisByDimensionAndTimeRoamingMapGeoMAPNode",
+                         "label" : "Node KPI by Dimension(GeoMAP)",
+                         "children" : [
+
+                         ]
+                     }
+                  ]
+                },
+                {
+                  "label": "Roaming S1AP",
+                  "children": [
+                    {
+                      "label": "Roaming S1AP KPI by Time(Line)",
+                      "templateId": "kpiAnalysisByDimensionAndTimeRoamingS1AP"
+                    },
+                    {
+                      "label": "Roaming S1AP KPI by Time(Stacked Bar)",
+                      "templateId": "kpiAnalysisByDimensionAndTimeRoamingS1APSBAR"
+                    },
+                    {
+                      "label": "Roaming S1AP KPI by Dimension(Bar)",
+                      "templateId": "kpiAnalysisByDimensionRoamingS1AP"
+                    },
+                    {
+                      "label": "Roaming S1AP Release Cause Analysis By Time (Line)",
+                      "templateId": "releaseCauseAnalysisByTimeRoamingS1AP"
+                    }
+                  ]
+                },
+                {
+                  "label": "Roaming 2G/3G",
+                  "children": [
+                    {
+                      "label": "Roaming 2G3G KPI By Time(Line)",
+                      "templateId": "kpiAnalysisByDimensionAndTimeRoaming2G3G"
+                    },
+                    {
+                      "label": "Roaming 2G3G KPI By Time(Stacked Bar)",
+                      "templateId": "kpiAnalysisByDimensionAndTimeRoaming2G3GSBAR"
+                    },
+                    {
+                      "label": "Roaming 2G3G KPI By Dimension(Bar)",
+                      "templateId": "kpiAnalysisByDimensionRoaming2G3G"
+                    },
+                    {
+                      "label": "Roaming 2G3G Release Cause Analysis By Time (Line)",
+                      "templateId": "releaseCauseAnalysisByTimeRoaming2G3G"
+                    }
+                  ]
+                },
+                {
+                  "label": "Roaming DNS",
+                  "children": [
+                    {
+                      "label": "Roaming DNS KPI by Time (Line)",
+                      "templateId": "kpiAnalysisByDimensionAndTimeRoamingDNS"
+                    },
+                    {
+                      "label": "Roaming DNS KPI by Time (Stacked Bar)",
+                      "templateId": "kpiAnalysisByDimensionAndTimeRoamingDNSSBAR"
+                    },
+                    {
+                      "label": "Roaming DNS KPI by Dimension (Bar)",
+                      "templateId": "kpiAnalysisByDimensionRoamingDNS"
+                    },
+                    {
+                      "label": "Roaming DNS Release Cause Analysis by Time (Line)",
+                      "templateId": "ReleaseCauseAnalysisByTimeRoamingDNSLine"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "label": "Roaming Data",
+              "children": [
+                {
+                  "label": "Roaming GTP-C",
+                  "children": [
+                    {
+                      "label": "Roaming GTP-C KPI by Time(Line)",
+                      "templateId": "kpiRoamingDataovertimeGTPC"
+                    },
+                    {
+                      "label": "Roaming GTP-C KPI by Time(Stacked Bar)",
+                      "templateId": "kpiRoamingDataovertimeGTPCSBAR"
+                    },
+                    {
+                      "label": "Roaming GTP-C KPI by Dimension(Bar)",
+                      "templateId": "kpiRoamingDataGTPC"
+                    },
+                    {
+                      "label": "Roaming GTP-C Release Cause Analysis by Time (Line)",
+                      "templateId": "GTPCroam_releaseCauseAnalysisByTime"
+                    }
+                  ]
+                },
+                {
+                  "label": "Roaming GTP-U",
+                  "children": [
+                    {
+                      "label": "Roaming GTP-U KPI by Time(Line)",
+                      "templateId": "kpiRoamingDataovertimeGTPU"
+                    },
+                    {
+                      "label": "Roaming GTP-U KPI by Time(Stacked Bar)",
+                      "templateId": "kpiRoamingDataovertimeGTPUSBAR"
+                    },
+                    {
+                      "label": "Roaming GTP-U KPI by Dimension(Bar)",
+                      "templateId": "kpiRoamingDataGTPU"
+                    },
+                    {
+                      "label": "Roaming GTP-U DNS Release Cause Analysis by Time (Line)",
+                      "templateId": "GTPUroam_releaseCauseAnalysisByTime"
+                    }
+                  ]
+                },
+                        {
+                            "label" : "Roaming GTP-U Local",
+                            "children" : [
+                                {
+                                    "templateId" : "kpiRoamingDataovertimeGTPULocal",
+                                    "label" : "Roaming GTP-U Local KPI by Time(Line)",
+                                    "children" : [
+
+                                    ]
+                                },
+                                {
+                                    "templateId" : "kpiRoamingDataovertimeGTPUSBARLocal",
+                                    "label" : "Roaming GTP-U Local KPI by Time(Stacked Bar)",
+                                    "children" : [
+
+                                    ]
+                                },
+                                {
+                                    "templateId" : "kpiRoamingDataGTPULocal",
+                                    "label" : "Roaming GTP-U Local KPI by Dimension(Bar)",
+                                    "children" : [
+
+                                    ]
+                                },
+                                {
+                                    "templateId" : "GTPUroam_releaseCauseAnalysisByTimeLocal",
+                                    "label" : "Roaming GTP-U Local DNS Release Cause Analysis by Time (Line)",
+                                    "children" : [
+
+                                    ]
+                                }
+                            ]
+                        }
+              ]
+            },
+            {
+              "label": "Roaming VoLTE/VoNR/VoRCS",
+              "children": [
+                {
+                  "label": "Roaming Voice Session",
+                  "children": [
+                    {
+                      "label": "Roaming Voice Session KPI By Time(Line)",
+                      "templateId": "kpiAnalysisByDimensionAndTimeRoamingVolte"
+                    },
+                    {
+                      "label": "Roaming Voice Session KPI By Time(Stacked Bar)",
+                      "templateId": "kpiAnalysisByDimensionAndTimeRoamingVolteSBAR"
+                    },
+                    {
+                      "label": "Roaming Voice Session KPI By Dimension(Bar)",
+                      "templateId": "kpiAnalysisByDimensionRoamingVolte"
+                    },
+                    {
+                      "label": "Roaming Voice Session Release Cause Analysis By Time (Line)",
+                      "templateId": "releaseCauseAnalysisByTimeRoamingVolte"
+                    }
+                  ]
+                },
+                {
+                  "label": "Roaming SIP Messaging",
+                  "children": [
+                    {
+                      "label": "Roaming SIP Message KPI by Time(Line)",
+                      "templateId": "kpiAnalysisByDimensionAndTimeRoamingMessaging",
+                      "children": []
+                    },
+                    {
+                      "label": "Roaming SIP Message KPI by Time(Stacked Bar)",
+                      "templateId": "kpiAnalysisByDimensionAndTimeRoamingMessagingSBAR",
+                      "children": []
+                    },
+                    {
+                      "label": "Roaming SIP Message KPI by Dimension(Bar)",
+                      "templateId": "kpiAnalysisByDimensionRoamingMessaging",
+                      "children": []
+                    },
+                    {
+                      "label": "Roaming SIP Message Release Cause Analysis by Time (Line)",
+                      "templateId": "releaseCauseAnalysisByTimeRoamingMessaging",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "label": "Roaming SIP Registration",
+                  "children": [
+                    {
+                      "label": "Roaming SIP Registration KPI by Time(Line)",
+                      "templateId": "kpiAnalysisByDimensionAndTimeRoamingRegistration",
+                      "children": []
+                    },
+                    {
+                      "label": "Roaming SIP Registration KPI by Time(Stacked Bar)",
+                      "templateId": "kpiAnalysisByDimensionAndTimeRoamingRegistrationSBAR",
+                      "children": []
+                    },
+                    {
+                      "label": "Roaming SIP Registration KPI by Dimension(Bar)",
+                      "templateId": "kpiAnalysisByDimensionRoamingRegistration",
+                      "children": []
+                    },
+                    {
+                      "label": "Roaming SIP Registration Release Cause Analysis by Time (Line)",
+                      "templateId": "releaseCauseAnalysisByTimeRoamingRegistration",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "label": "Roaming CS Services",
+              "children": [
+                {
+                  "label": "Roaming CS Voice",
+                  "children": [
+                    {
+                      "label": "Roaming MAP(Call)",
+                      "children": [
+                        {
+                          "label": "Roaming MAP(Call) KPI by Time(Line)",
+                          "templateId": "kpiAnalysisByDimensionAndTimeRoamingCallHandling"
+                        },
+                        {
+                          "label": "Roaming MAP(Call) KPI by Time(Stacked Bar)",
+                          "templateId": "kpiAnalysisByDimensionAndTimeRoamingCallHandlingSBAR"
+                        },
+                        {
+                          "label": "Roaming MAP(Call) KPI by Dimension(Bar)",
+                          "templateId": "kpiAnalysisByDimensionRoamingMapCallHandling"
+                        },
+                        {
+                          "label": "Roaming MAP(Call) Release Cause Analysis by Time (Line)",
+                          "templateId": "releaseCauseAnalysisByTimeRoamingMapCallHandling"
+                        }
+                      ]
+                    },
+                    {
+                      "label": "Roaming CAP",
+                      "children": [
+                        {
+                          "label": "Roaming CAP KPI by Time(Line)",
+                          "templateId": "kpiRoamingDataovertimeCAP"
+                        },
+                        {
+                          "label": "Roaming CAP KPI by Time(Stacked Bar)",
+                          "templateId": "kpiRoamingDataovertimeCAPSBAR"
+                        },
+                        {
+                          "label": "Roaming CAP KPI by Dimension(Bar)",
+                          "templateId": "kpiRoamingDataCAP"
+                        },
+                        {
+                          "label": "Call Release Analysis by Time (Line)",
+                          "templateId": "kpiRoamingDataovertimeCAPCR"
+                        },
+                        {
+                          "label": "Release Cause Analysis by Time (Line)",
+                          "templateId": "kpiRoamingDataovertimeCAPRC"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "label": "Roaming CS Messaging",
+                  "children": [
+                    {
+                      "label": "Roaming MAP(Messaging)",
+                      "children": [
+                        {
+                          "label": "Roaming MAP Messaging KPI by Time(Line)",
+                          "templateId": "kpiAnalysisByDimensionAndTimeRoamingMapMsg"
+                        },
+                        {
+                          "label": "Roaming MAP Messaging KPI by Time(Stacked Bar)",
+                          "templateId": "kpiAnalysisByDimensionAndTimeRoamingMapMsgSBAR"
+                        },
+                        {
+                          "label": "Roaming MAP Messaging KPI by Dimension(Bar)",
+                          "templateId": "kpiAnalysisByDimensionRoamingMapMsg"
+                        },
+                        {
+                          "label": "Roaming MAP Messaging Release Cause Analysis by Time (Line)",
+                          "templateId": "releaseCauseAnalysisByTimeRoamingMapMsg"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+	      {
+		      "label": "Customer Experience (CEI)",
+		      "children": [
+			      {
+				      "label": "Customer Experience Index by Time",
+				      "templateId": "cei"
+			      }
+		      ]
+	      },
+        {
+          "label": "Interconnect",
+          "children": [
+            {
+              "label": "Interconnect SIP Voice",
+              "children": [
+                {
+                  "label": "Roaming Interconnect SIP Voice KPI by Time(Line)",
+                  "templateId": "kpiAnalysisByDimensionAndTimeRoamingInterconn"
+                },
+                {
+                  "label": "Roaming Interconnect SIP Voice KPI by Dimension(Bar)",
+                  "templateId": "kpiAnalysisByDimensionRoamingInterconn"
+                },
+                {
+                  "label": "Roaming Interconnect SIP Voice Release Cause Analysis By Time (Line)",
+                  "templateId": "releaseCauseAnalysisByTimeRoamingInterconnect"
+                }
+              ]
+            },
+            {
+              "label": "Interconnect SIP Messaging",
+              "children": [
+                {
+                  "label": "Interconnect SIP Message KPI by Time(Line)",
+                  "templateId": "kpiAnalysisByDimensionAndTimeRoamingInterMessaging"
+                },
+                {
+                  "label": "Interconnect SIP Message KPI by Time(Stacked Bar)",
+                  "templateId": "kpiAnalysisByDimensionAndTimeRoamingInterMessagingSBAR"
+                },
+                {
+                  "label": "Interconnect SIP Message KPI by Dimension(Bar)",
+                  "templateId": "kpiAnalysisByDimensionRoamingInterMessaging"
+                },
+                {
+                  "label": "Interconnect SIP Message Release Cause Analysis By Time (Line)",
+                  "templateId": "releaseCauseAnalysisByTimeRoamingInterMessaging"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Release Cause Distribution",
+          "children": [
+            {
+              "templateId": "RCDAggkpiByTimeSBAR",
+              "label": "Release Cause Distribution By Time(Stacked Bar)",
+              "children": []
+            },
+            {
+              "label": "Release Cause Distribution By Time(Dual)",
+              "templateId": "RCDAggkpiByTimeDUAL"
+            },
+            {
+              "label": "Release Cause Distribution By Time(Line)",
+              "templateId": "RCDAggkpiByTimeLine"
+            },
+            {
+              "label": "Release Cause Distribution(Bar)",
+              "templateId": "RCDAggkpiByTimeBAR"
+            },
+            {
+              "label": "Release Cause Distribution(Stat)",
+              "templateId": "RCDAggkpiByTimeSTAT"
+            },
+            {
+              "templateId": "RCDAlarmskpiByTimeSBAR",
+              "label": "Release Cause Alarms Distribution By Time (Stacked Bar)",
+              "children": []
+            },
+            {
+              "templateId": "RCDAlarmskpiByTimeBAR",
+              "label": "Release Cause Alarms Distribution (Bar)"
+            },
+            {
+              "templateId": "RCDAlarmskpiByTimeLine",
+              "label": "Release Cause Alarms Distribution By Time (Line Chart) (Line)"
+            },
+            {
+              "templateId": "RCDAlarmskpiByTimeSTAT",
+              "label": "Release Cause Alarms Distribution(Stat)"
+            },
+            {
+              "templateId": "RCDAlarmskpiByTimeTable",
+              "label": "Release Cause Alarms Distribution Table"
+            }
+          ]
+        },
+        {
+          "label" : "TM TI Data",
+          "children" : [
+              {
+                  "label" : "Traffic Management",
+                  "children" : [
+                      {
+                          "label" : "Traffic Management(Stats)",
+                          "templateId" : "TMTIAggkpiByTimeSTAT"
+                      }
+                  ]
+              },
+              {
+                "label" : "Traffic Alarms",
+                "children" : [
+                    {
+                        "label" : "Traffic Alarms(Stats)",
+                        "templateId" : "TMTIAlarmkpiByTimeSTAT"
+                    }
+                ]
+            }
+          ]
+      },
+		{
+            "label" : "Ericsson PM",
+            "children" : [
+                {
+                    "templateId" : "kpiEricssonStats",
+                    "label" : "Ericsson PM 1a (Stats)",
+                    "children" : [
+
+                    ]
+                },
+                {
+                    "templateId" : "kpiEricssonBar",
+                    "label" : "Ericsson PM 1a (Bar)",
+                    "children" : [
+
+                    ]
+                },
+                {
+                    "templateId" : "kpiEricssonLine",
+                    "label" : "Ericsson PM 1a (Line Chart)",
+                    "children" : [
+
+                    ]
+                },
+                {
+                    "templateId" : "kpiEricssonLTED",
+                    "label" : "Ericsson PM (LTE) (Stats)",
+                    "children" : [
+
+                    ]
+                },
+                {
+                    "templateId" : "kpiEricssonLTELine",
+                    "label" : "Ericsson PM (LTE) (Line Chart)",
+                    "children" : [
+
+                    ]
+                },
+                {
+                    "templateId" : "kpiEricssonLTEBar",
+                    "label" : "Ericsson PM (LTE) (Bar)",
+                    "children" : [
+
+                    ]
+                },
+                {
+                    "templateId" : "kpiEricssonNRD",
+                    "label" : "Ericsson PM (NR) (Stats)",
+                    "children" : [
+
+                    ]
+                },
+                 {
+                    "templateId" : "kpiEricssonNRLine",
+                    "label" : "Ericsson PM (NR) (Line Chart)",
+                    "children" : [
+
+                    ]
+                },
+                {
+                    "templateId" : "kpiEricssonNRBar",
+                    "label" : "Ericsson PM (NR) (Bar)",
+                    "children" : [
+
+                    ]
+                }
+            ]
+        },
+		{
+            "label" : "Network Status",
+            "children" : [
+                {
+                    "label" : "Executive Dashlet",
+                    "templateId" : "VZEXTableDashboard",
+                    "children" : [
+
+                    ]
+                }
+            ]
+        },
+        {
+          "label": "QA Reporting",
+          "children": [
+            {
+              "label": "QA Reporting KPI Trend (Line)",
+              "templateId": "qaReportingLine"
+            },
+            {
+              "label": "QA Reporting KPI Distribution (Bar)",
+              "templateId": "qaReportingBar"
+            },
+            {
+              "label": "QA Reporting KPI Snapshot (Stat)",
+              "templateId": "qaReportingStat"
+            },
+            {
+              "label": "QA Reporting KPI Distribution (Stacked Bar)",
+              "templateId": "qaReportingStackedBar"
+            },
+            {
+              "label": "QA Reporting KPI Trend (Dual Axis)",
+              "templateId": "qaReportingDual"
+            },
+            {
+              "label": "QA Reporting KPI by Time (Table)",
+              "templateId": "qaReportingTable"
+            }
+          ]
+        },
+        {
+          "label": "IOT Control Plane",
+          "children": [
+            {
+              "label": "IOT Control Plane (GeoMAP)",
+              "templateId": "IOTControlPlaneMAP"
+            },
+            {
+              "label": "IOT Control Plane (GeoMAP Country)",
+              "templateId": "IOTControlPlaneCountryMAP"
+            },
+            {
+              "label": "IOT Control Plane (Line)",
+              "templateId": "IOTControlPlaneLINE"
+            },
+            {
+              "label": "IOT Control Plane (Bar)",
+              "templateId": "IOTControlPlaneBAR"
+            },
+            {
+              "label": "IOT Control Plane (Area)",
+              "templateId": "IOTControlPlaneAREA"
+            }
+          ]
+        },
+		{
+            "label" : "Tethering Detection",
+            "children" : [
+                {
+                    "templateId" : "tetheringDetectionkpiByTime",
+                    "label" : "KPI By Time (Line)",
+                    "children" : [
+
+                    ]
+                },
+                {
+                    "templateId" : "TetheringDetectionTableDashboard",
+                    "label" : "Ranked Table",
+                    "children" : [
+
+                    ]
+                }
+            ]
+        }
+      ]
+    },
+    {
+      "id": "DASHLET_OPEN_DIRECTORY",
+      "hierarchy": [
+        {
+          "label": "Analysis by Procedure",
+          "children": [
+            {
+              "label": "Diam - Analysis by Procedure",
+              "templateId": "diameterAnalysisByProcedureTableTemplate"
+            },
+            {
+              "label": "DNS - Analysis by Procedure",
+              "templateId": "dnsAnalysisByProcedureTableTemplate"
+            }
+          ]
+        }
+      ]
+    }
+  ]

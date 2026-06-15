@@ -1,0 +1,533 @@
+[
+    {
+        "id": "rankCustomSqlQA",
+        "type": "CUSTOM_SQL",
+        "customSql": "with base AS (SELECT ${TIME_COLUMN}, ${GROUPBY_COLUMN}, ${KPI_COLUMN}, DENSE_RANK() OVER (PARTITION BY ${TIME_QUERY} ORDER BY ${KPI_FORMULA} ${SORT_DIRECTION}) AS rank FROM ${TABLE_NAME} left join (SELECT NULLIF(COUNT(issue_key), 0) as Total_Test FROM omniq.qa_test_created) qat ON 1 = 1 WHERE ${startTime_clause} AND ${endTime_clause} ${FILTER_PLACEHOLDER} GROUP BY ${TIME_COLUMN_ALIAS}, ${GROUPBY_ID}) SELECT ${TIME_COLUMN_ALIAS}, ${KPI_ID}, ${GROUPBY_ID} from base WHERE rank <= ${rank_value} order by ${TIME_COLUMN_ALIAS};"
+    },
+    {
+        "id": "groupByQAReporting",
+        "type": "GROUP_BY",
+        "name": "Analyse By",
+        "queryMapping": [
+            {
+                "id": "${GROUPBY_ID}",
+                "name": "${GROUPBY_ALIAS}",
+                "runSql": "${GROUPBY_VALUE}",
+                "select": "${GROUPBY_COLUMN}"
+            }
+        ],
+        "data": [
+            {
+                "id": "qaReportTestJobName",
+                "name": "Test Job Name",
+                "runSql": "TEST_JOB_NAME",
+                "correspondingFilter": "qaReportTestJobNameFilter"
+            },
+            {
+                "id": "qaReportEnvName",
+                "name": "Env Name",
+                "runSql": "ENV_NAME",
+                "correspondingFilter": "qaReportEnvNameFilter"
+            },
+            {
+                "id": "qaReportEnvVersion",
+                "name": "Env Version",
+                "runSql": "ENV_VERSION",
+                "correspondingFilter": "qaReportEnvVersionFilter"
+            },
+            {
+                "id": "qaReportSprint",
+                "name": "Sprint",
+                "runSql": "SPRINT",
+                "correspondingFilter": "qaReportSprintFilter"
+            },
+            {
+                "id": "qaReportTestGroup",
+                "name": "Test Group",
+                "runSql": "TEST_GROUP",
+                "correspondingFilter": "qaReportTestGroupFilter"
+            },
+            {
+                "id": "qaReportTestGroupFeature",
+                "name": "Test Group Feature",
+                "runSql": "TEST_GROUP_FEATURE",
+                "correspondingFilter": "qaReportTestGroupFeatureFilter"
+            },
+            {
+                "id": "qaReportTestScenario",
+                "name": "Test Scenario",
+                "runSql": "TEST_SCENARIO",
+                "correspondingFilter": "qaReportTestScenarioFilter"
+            },
+            {
+                "id": "qaReportAutoTestRunStatus",
+                "name": "Auto Test Run Status",
+                "runSql": "AUTO_TEST_RUN_STATUS",
+                "correspondingFilter": "qaReportAutoTestRunStatusFilter"
+            },
+            {
+                "id": "qaReportBugs",
+                "name": "Bugs",
+                "runSql": "BUGS",
+                "correspondingFilter": "qaReportBugsFilter"
+            },
+            {
+                "id": "qaReportStatus",
+                "name": "Status",
+                "runSql": "STATUS",
+                "correspondingFilter": "qaReportStatusFilter"
+            },
+            {
+                "id": "qaReportPriority",
+                "name": "Priority",
+                "runSql": "PRIORITY",
+                "correspondingFilter": "qaReportPriorityFilter"
+            },
+            {
+                "id": "qaReportAssignee",
+                "name": "Assignee",
+                "runSql": "ASSIGNEE",
+                "correspondingFilter": "qaReportAssigneeFilter"
+            },
+            {
+                "id": "qaReportFixVersions",
+                "name": "Fix Version/s",
+                "runSql": "FIX_VERSIONS",
+                "correspondingFilter": "qaReportFixVersionsFilter"
+            },
+            {
+                "id": "qaReportComponents",
+                "name": "Component/s",
+                "runSql": "COMPONENTS",
+                "correspondingFilter": "qaReportComponentsFilter"
+            },
+            {
+                "id": "qaReportLabels",
+                "name": "Labels",
+                "runSql": "LABELS",
+                "correspondingFilter": "qaReportLabelsFilter"
+            },
+            {
+                "id": "qaReportBugCategory",
+                "name": "Bug Category",
+                "runSql": "BUG_CATEGORY",
+                "correspondingFilter": "qaReportBugCategoryFilter"
+            },
+            {
+                "id": "qaReportBugOrigin",
+                "name": "Bug Origin",
+                "runSql": "BUG_ORIGIN",
+                "correspondingFilter": "qaReportBugOriginFilter"
+            },
+            {
+                "id": "qaReportCustomerName",
+                "name": "Customer/s Name",
+                "runSql": "CUSTOMER_NAME",
+                "correspondingFilter": "qaReportCustomerNameFilter"
+            },
+            {
+                "id": "qaReportDetectedVersion",
+                "name": "Detected Version",
+                "runSql": "DETECTED_VERSION",
+                "correspondingFilter": "qaReportDetectedVersionFilter"
+            },
+            {
+                "id": "qaReportScrumTeam",
+                "name": "Scrum Team",
+                "runSql": "SCRUM_TEAM",
+                "correspondingFilter": "qaReportScrumTeamFilter"
+            },
+            {
+                "id": "qaReportScopeChange",
+                "name": "Scope Change",
+                "runSql": "SCOPE_CHANGE",
+                "correspondingFilter": "qaReportScopeChangeFilter"
+            }
+        ]
+    },
+    {
+        "id": "kpiQAReporting",
+        "type": "KPI",
+        "name": "KPI",
+        "queryMapping": [
+            {
+                "id": "${KPI_ID}",
+                "name": "${KPI_NAME}",
+                "runSql": "${KPI_FORMULA}",
+                "select": "${KPI_COLUMN}",
+                "extraConfig": "palette,timeInterval,defaultTime"
+            }
+        ],
+        "customSql": "Select ${TIME_COLUMN}, ${GROUPBY_COLUMN}, ${KPI_COLUMN} from ${TABLE_NAME} left join (SELECT NULLIF(COUNT(issue_key), 0) as Total_Test FROM omniq.qa_test_created) qat ON 1 = 1 where ${startTime_clause} AND ${endTime_clause} ${FILTER_PLACEHOLDER} Group by ${TIME_COLUMN_ALIAS}, ${GROUPBY_ID} Order By ${TIME_COLUMN_ALIAS}",
+        "data": [
+            {
+                "id": "qaTotalAutomatedTests",
+                "name": "Total Automated Tests",
+                "runSql": "COUNT(DISTINCT EXECUTED_TEST)"
+            },
+            {
+                "id": "qaPassedTests",
+                "name": "Passed Tests",
+                "runSql": "COUNT(DISTINCT CASE WHEN UPPER(AUTO_TEST_RUN_STATUS) = 'PASS' THEN EXECUTED_TEST END)"
+            },
+            {
+                "id": "qaExecutionSuccessRatePct",
+                "name": "Execution Success Rate %",
+                "runSql": "ROUND(100.0 * COUNT(DISTINCT CASE WHEN UPPER(AUTO_TEST_RUN_STATUS) = 'PASS' THEN EXECUTED_TEST END) / NULLIF(COUNT(DISTINCT EXECUTED_TEST), 0), 2)",
+                "valueSuffix": "%"
+            },
+            {
+                "id": "qaTotalScenarios",
+                "name": "Total Scenarios",
+                "runSql": "SUM(TOTAL_SCENARIOS)"
+            },
+            {
+                "id": "qaAutomationCoveragePct",
+                "name": "Automation Coverage %",
+                "runSql": "ROUND(100.0 * COUNT(DISTINCT EXECUTED_TEST) / NULLIF((SELECT COUNT(qat.\"Issue key\") FROM omniq.qa_test_created qat), 0), 2)",
+                "valueSuffix": "%"
+            },
+            {
+                "id": "qaPassedScenarios",
+                "name": "Passed Scenarios",
+                "runSql": "SUM(PASSED_SCENARIOS)"
+            },
+            {
+                "id": "qaFailedScenarios",
+                "name": "Failed Scenarios",
+                "runSql": "SUM(FAILED_SCENARIOS)"
+            },
+            {
+                "id": "qaAutomationStabilityPct",
+                "name": "Automation Stability %",
+                "runSql": "ROUND(100.0 * SUM(PASSED_SCENARIOS) / NULLIF(SUM(PASSED_SCENARIOS) + SUM(FAILED_SCENARIOS), 0), 2)",
+                "valueSuffix": "%"
+            },
+            {
+                "id": "qaBugsDetectedByAutomation",
+                "name": "Bugs Detected By Automation",
+                "runSql": "COUNT(DISTINCT CASE WHEN QA_REPORT = 'Automation' THEN BUGS END)"
+            },
+            {
+                "id": "qaTotalBugsDetected",
+                "name": "Total Bugs Detected",
+                "runSql": "COUNT(DISTINCT BUGS)"
+            },
+            {
+                "id": "qaOpenBugsPerSprint",
+                "name": "Open Bugs Per Sprint",
+                "runSql": "AVG(OPEN_BUGS)"
+            },
+            {
+                "id": "qaClosedBugsPerSprint",
+                "name": "Closed Bugs Per Sprint",
+                "runSql": "AVG(CLOSED_BUGS)"
+            },
+            {
+                "id": "qaOpenBugRatePct",
+                "name": "Open Bug Rate %",
+                "runSql": "ROUND(100.0 * AVG(COALESCE(OPEN_BUGS, 0)) / NULLIF(AVG(COALESCE(OPEN_BUGS, 0)) + AVG(COALESCE(CLOSED_BUGS, 0)), 0), 2)",
+                "valueSuffix": "%"
+            },
+            {
+                "id": "qaBugsPer100Tests",
+                "name": "Bugs Per 100 Tests",
+                "runSql": "ROUND(COUNT(DISTINCT CASE WHEN QA_REPORT = 'Automation' THEN BUGS END) * 100.0 / NULLIF(COUNT(DISTINCT EXECUTED_TEST), 0), 2)"
+            },
+            {
+                "id": "qaAvgResolutionDays",
+                "name": "Avg Resolution Days",
+                "runSql": "ROUND(AVG(RESOLUTION_DAYS), 2)"
+            },
+            {
+                "id": "qaAvgExecutionDurationMin",
+                "name": "Avg Execution Duration Min",
+                "runSql": "ROUND(AVG(TOTAL_EXECUTION_DURATION_MIN), 2)"
+            },
+            {
+                "id": "qaTotalExecutionDurationMin",
+                "name": "Total Execution Duration Min",
+                "runSql": "SUM(TOTAL_EXECUTION_DURATION_MIN)"
+            },
+            {
+                "id": "qaExecutiveQualityScore",
+                "name": "Executive Quality Score",
+                "runSql": "ROUND(((ROUND(100.0 * COUNT(DISTINCT CASE WHEN UPPER(AUTO_TEST_RUN_STATUS) = 'PASS' THEN EXECUTED_TEST END) / NULLIF(COUNT(DISTINCT EXECUTED_TEST), 0), 2)) * 0.40 + (100 - (100.0 * SUM(COALESCE(OPEN_BUGS, 0)) / NULLIF(SUM(COALESCE(OPEN_BUGS, 0)) + SUM(COALESCE(CLOSED_BUGS, 0)), 0))) * 0.40 + (CASE WHEN AVG(RESOLUTION_DAYS) >= 100 THEN 0 ELSE 100 - AVG(RESOLUTION_DAYS) END) * 0.20), 2)"
+            },
+            {
+                "id": "qaTotalBugs",
+                "name": "Total Bugs",
+                "runSql": "SUM(TOTAL_BUGS)"
+            },
+            {
+                "id": "qaRegressionBugs",
+                "name": "Regression Bugs",
+                "runSql": "SUM(REGRESSION_BUGS)"
+            },
+            {
+                "id": "qaCriticalRegressionBugs",
+                "name": "Critical Regression Bugs",
+                "runSql": "SUM(CRITICAL_REGRESSION_BUGS)"
+            },
+            {
+                "id": "qaOpenRegressionBugs",
+                "name": "Open Regression Bugs",
+                "runSql": "SUM(OPEN_REGRESSION_BUGS)"
+            },
+            {
+                "id": "qaClosedRegressionBugs",
+                "name": "Closed Regression Bugs",
+                "runSql": "SUM(CLOSED_REGRESSION_BUGS)"
+            },
+            {
+                "id": "qaCustomerRegressionBugs",
+                "name": "Customer Regression Bugs",
+                "runSql": "SUM(CUSTOMER_REGRESSION_BUGS)"
+            },
+            {
+                "id": "qaAvgRegressionResolutionDays",
+                "name": "Avg Regression Resolution Days",
+                "runSql": "AVG(CASE WHEN BUG_CATEGORY = 'Regression' THEN RESOLUTION_DAYS END)"
+            },
+            {
+                "id": "qaBlockerMTTR",
+                "name": "Blocker MTTR",
+                "runSql": "AVG(CASE WHEN BUG_CATEGORY = 'Regression' AND PRIORITY = 'Blocker' THEN RESOLUTION_DAYS END)"
+            },
+            {
+                "id": "qaTotalReleases",
+                "name": "Total Releases",
+                "runSql": "COUNT(DISTINCT CASE WHEN COALESCE(FIX_VERSIONS, '') <> '' THEN FIX_VERSIONS END)"
+            },
+            {
+                "id": "qaFailedReleases",
+                "name": "Failed Releases",
+                "runSql": "COUNT(DISTINCT CASE WHEN COALESCE(FIX_VERSIONS, '') <> '' AND BUG_CATEGORY = 'Regression' THEN FIX_VERSIONS END)"
+            },
+            {
+                "id": "qaDeploymentsPerMonth",
+                "name": "Deployments Per Month",
+                "runSql": "COUNT(DISTINCT CASE WHEN COALESCE(FIX_VERSIONS, '') <> '' THEN FIX_VERSIONS END)::numeric / NULLIF(COUNT(DISTINCT CASE WHEN COALESCE(FIX_VERSIONS, '') <> '' THEN DATE_TRUNC('month', BUG_RESOLVED) END), 0)"
+            },
+            {
+                "id": "qaCompletedSprints",
+                "name": "Completed Sprints",
+                "runSql": "COUNT(DISTINCT CASE WHEN SPRINT_STATUS = 'Completed' THEN SPRINT END)"
+            }
+        ],
+        "tableMapping": [
+            {
+                "table": "omniq.AGG_QA_REPORT_5_MIN",
+                "minIntervalInHours": ">0"
+            },
+            {
+                "table": "omniq.AGG_QA_REPORT_HOUR",
+                "minIntervalInHours": ">2"
+            },
+            {
+                "table": "omniq.AGG_QA_REPORT_DAY",
+                "minIntervalInHours": ">=24"
+            }
+        ],
+        "kpiDetails": [
+            {
+                "_id": "trend",
+                "type": "TREND"
+            },
+            {
+                "_id": "rank",
+                "type": "RANK",
+                "customSql": "rankCustomSqlQA"
+            }
+        ]
+    },
+    {
+        "id": "qaReportTestJobNameFilter",
+        "type": "FILTER",
+        "name": "Test Job Name",
+        "fetchQuery": "SELECT DISTINCT TEST_JOB_NAME AS ID, TEST_JOB_NAME AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE TEST_JOB_NAME IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "TEST_JOB_NAME IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportEnvNameFilter",
+        "type": "FILTER",
+        "name": "Env Name",
+        "fetchQuery": "SELECT DISTINCT ENV_NAME AS ID, ENV_NAME AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE ENV_NAME IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "ENV_NAME IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportEnvVersionFilter",
+        "type": "FILTER",
+        "name": "Env Version",
+        "fetchQuery": "SELECT DISTINCT ENV_VERSION AS ID, ENV_VERSION AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE ENV_VERSION IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "ENV_VERSION IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportSprintFilter",
+        "type": "FILTER",
+        "name": "Sprint",
+        "fetchQuery": "SELECT DISTINCT SPRINT AS ID, SPRINT AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE SPRINT IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "SPRINT IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportTestGroupFilter",
+        "type": "FILTER",
+        "name": "Test Group",
+        "fetchQuery": "SELECT DISTINCT TEST_GROUP AS ID, TEST_GROUP AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE TEST_GROUP IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "TEST_GROUP IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportTestGroupFeatureFilter",
+        "type": "FILTER",
+        "name": "Test Group Feature",
+        "fetchQuery": "SELECT DISTINCT TEST_GROUP_FEATURE AS ID, TEST_GROUP_FEATURE AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE TEST_GROUP_FEATURE IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "TEST_GROUP_FEATURE IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportTestScenarioFilter",
+        "type": "FILTER",
+        "name": "Test Scenario",
+        "fetchQuery": "SELECT DISTINCT TEST_SCENARIO AS ID, TEST_SCENARIO AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE TEST_SCENARIO IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "TEST_SCENARIO IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportAutoTestRunStatusFilter",
+        "type": "FILTER",
+        "name": "Auto Test Run Status",
+        "fetchQuery": "SELECT DISTINCT AUTO_TEST_RUN_STATUS AS ID, AUTO_TEST_RUN_STATUS AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE AUTO_TEST_RUN_STATUS IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "AUTO_TEST_RUN_STATUS IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportBugsFilter",
+        "type": "FILTER",
+        "name": "Bugs",
+        "fetchQuery": "SELECT DISTINCT BUGS AS ID, BUGS AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE BUGS IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "BUGS IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportStatusFilter",
+        "type": "FILTER",
+        "name": "Status",
+        "fetchQuery": "SELECT DISTINCT STATUS AS ID, STATUS AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE STATUS IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "STATUS IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportPriorityFilter",
+        "type": "FILTER",
+        "name": "Priority",
+        "fetchQuery": "SELECT DISTINCT PRIORITY AS ID, PRIORITY AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE PRIORITY IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "PRIORITY IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportAssigneeFilter",
+        "type": "FILTER",
+        "name": "Assignee",
+        "fetchQuery": "SELECT DISTINCT ASSIGNEE AS ID, ASSIGNEE AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE ASSIGNEE IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "ASSIGNEE IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportFixVersionsFilter",
+        "type": "FILTER",
+        "name": "Fix Version/s",
+        "fetchQuery": "SELECT DISTINCT FIX_VERSIONS AS ID, FIX_VERSIONS AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE FIX_VERSIONS IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "FIX_VERSIONS IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportComponentsFilter",
+        "type": "FILTER",
+        "name": "Component/s",
+        "fetchQuery": "SELECT DISTINCT COMPONENTS AS ID, COMPONENTS AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE COMPONENTS IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "COMPONENTS IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportLabelsFilter",
+        "type": "FILTER",
+        "name": "Labels",
+        "fetchQuery": "SELECT DISTINCT LABELS AS ID, LABELS AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE LABELS IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "LABELS IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportBugCategoryFilter",
+        "type": "FILTER",
+        "name": "Bug Category",
+        "fetchQuery": "SELECT DISTINCT BUG_CATEGORY AS ID, BUG_CATEGORY AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE BUG_CATEGORY IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "BUG_CATEGORY IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportBugOriginFilter",
+        "type": "FILTER",
+        "name": "Bug Origin",
+        "fetchQuery": "SELECT DISTINCT BUG_ORIGIN AS ID, BUG_ORIGIN AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE BUG_ORIGIN IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "BUG_ORIGIN IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportCustomerNameFilter",
+        "type": "FILTER",
+        "name": "Customer/s Name",
+        "fetchQuery": "SELECT DISTINCT CUSTOMER_NAME AS ID, CUSTOMER_NAME AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE CUSTOMER_NAME IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "CUSTOMER_NAME IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportDetectedVersionFilter",
+        "type": "FILTER",
+        "name": "Detected Version",
+        "fetchQuery": "SELECT DISTINCT DETECTED_VERSION AS ID, DETECTED_VERSION AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE DETECTED_VERSION IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "DETECTED_VERSION IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportScrumTeamFilter",
+        "type": "FILTER",
+        "name": "Scrum Team",
+        "fetchQuery": "SELECT DISTINCT SCRUM_TEAM AS ID, SCRUM_TEAM AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE SCRUM_TEAM IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "SCRUM_TEAM IN (%placeholder%)"
+    },
+    {
+        "id": "qaReportScopeChangeFilter",
+        "type": "FILTER",
+        "name": "Scope Change",
+        "fetchQuery": "SELECT DISTINCT SCOPE_CHANGE AS ID, SCOPE_CHANGE AS NAME FROM omniq.AGG_QA_REPORT_DAY WHERE SCOPE_CHANGE IS NOT NULL ORDER BY NAME",
+        "topLevel": "All",
+        "mappableById": true,
+        "runSql": "SCOPE_CHANGE IN (%placeholder%)"
+    }
+]

@@ -1,0 +1,928 @@
+[
+  {
+    "id": "qaReportingLine",
+    "name": "QA Reporting KPI Trend (Line)",
+    "dashletConfig": {
+      "name": [
+				{
+					"type": "INPUT",
+					"value": "kpiQAReporting"
+				},
+				{
+					"type": "STATIC",
+					"value": " By "
+				},
+				{
+					"type": "INPUT",
+					"value": "groupByQAReporting"
+				},
+				{
+					"type": "STATIC",
+					"value": " and Time"
+				}
+			],
+      "chartType": "LINE_CHART",
+      "chartHeader": [
+        {
+          "id": "kpiQAReporting",
+          "label": "KPI"
+        },
+        {
+          "id": "groupByQAReporting",
+          "label": "Group By"
+        },
+        {
+          "id": "description",
+          "label": "Line trend for QA reporting KPIs over time"
+        },
+        {
+            "id": "kpiType",
+            "label": "KPI Type"
+        },
+        {
+            "id": "distribution",
+            "label": "Distribution"
+        }
+      ],
+      "chartConfig": {
+				"seriesColors": {
+					"Success": {
+						"default": "hsla(120, 61%, 34%, 1)",
+						"hover": "hsla(120, 61%, 48%, 1)",
+						"disabled": "hsla(120, 61%, 67%, 1)"
+					},
+					"Error": {
+						"default": "hsla(0, 100%, 50%,1)",
+						"hover": "hsla(0, 80%, 40%)",
+						"disabled": "hsla(0, 100%, 50%,1)"
+					},
+					"Reject": {
+						"default": "hsla(23, 95%, 52%, 1)",
+						"hover": "hsla(40, 94%, 58%, 1)",
+						"disabled": "hsla(23, 95%, 52%, 1)"
+					},
+					"Truncated": {
+						"default": "hsla(211, 12%, 48%, 1)",
+						"hover": "hsla(204, 8%, 76%, 1)",
+						"disabled": "hsla(211, 12%, 48%, 1)"
+					},
+					"Failure": {
+						"default": "hsla(2, 80%, 47%, 1)",
+						"hover": "hsla(6, 78%, 57%, 1)",
+						"disabled": "hsla(2, 80%, 47%, 1)"
+					},
+					"Unknown": {
+						"default": "hsla(229, 100%, 59%, 1)",
+						"hover": "hsla(187, 100%, 40%, 1)",
+						"disabled": "hsla(229, 100%, 59%, 1)"
+					}
+				}
+			},
+      "inputFields": [
+        [
+          "timeTabs",
+          "aggregationOverride",
+        ],
+        [
+          "startDate",
+          "endDate",
+          "relativeTime"
+        ],
+        [
+          "kpiQAReporting",
+          "groupByQAReporting",
+          "worstPerformingLimit",
+          "worstPerforming"
+        ]
+      ],
+      "advancedInputFields": [
+		[
+          "qaReportSprintFilter",
+          "qaReportStatusFilter",
+          "qaReportPriorityFilter"
+        ],
+        [
+          "qaReportTestJobNameFilter",
+          "qaReportEnvNameFilter",
+          "qaReportEnvVersionFilter"
+        ],
+        [
+          "qaReportTestGroupFilter",
+          "qaReportTestGroupFeatureFilter",
+          "qaReportTestScenarioFilter"
+        ],
+        [
+          "qaReportAutoTestRunStatusFilter",
+          "qaReportBugsFilter",
+          "qaReportAssigneeFilter"
+        ],
+        [
+          "qaReportFixVersionsFilter",
+          "qaReportComponentsFilter",
+          "qaReportLabelsFilter"
+        ],
+        [
+          "qaReportBugCategoryFilter",
+          "qaReportBugOriginFilter",
+          "qaReportCustomerNameFilter"
+        ],
+        [
+          "qaReportDetectedVersionFilter",
+          "qaReportScrumTeamFilter",
+          "qaReportScopeChangeFilter"
+        ]
+      ],
+      "data": {
+        "kpiQAReporting": [
+          "qaTotalAutomatedTests"
+        ],
+        "groupByQAReporting": [
+          "-1"
+        ],
+        "relativeTime": [
+          "4"
+        ],
+        "aggregationOverride": [
+          "AUTO"
+        ],
+        "worstPerforming": [
+          "false"
+        ],
+        "worstPerformingLimit": [
+          10
+        ],
+        "qaReportTestJobNameFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportEnvNameFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportEnvVersionFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportSprintFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportTestGroupFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportTestGroupFeatureFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportTestScenarioFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportAutoTestRunStatusFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportBugsFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportStatusFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportPriorityFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportAssigneeFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportFixVersionsFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportComponentsFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportLabelsFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportBugCategoryFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportBugOriginFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportCustomerNameFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportDetectedVersionFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportScrumTeamFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportScopeChangeFilter": [
+          {
+            "id": "All"
+          }
+        ],
+		"kpiType": [
+					"trend"
+				],
+				"distribution": [
+					"ACTUAL"
+				],
+		"postProcess": [
+					true
+				]
+      },
+      "actionItems": [
+        "qaReportingSwitchView"
+      ]
+    }
+  },
+  {
+    "id": "qaReportingBar",
+    "name": "QA Reporting KPI Distribution (Bar)",
+    "dashletConfig": {
+      "name": "QA Reporting KPI Distribution (Bar)",
+      "chartType": "BAR_CHART",
+      "chartHeader": [
+        {
+          "id": "kpiQAReporting",
+          "label": "KPI"
+        },
+        {
+          "id": "groupByQAReporting",
+          "label": "Analyze By"
+        },
+        {
+          "id": "description",
+          "label": "Bar chart view for QA reporting KPIs"
+        }
+      ],
+      "chartConfig": {
+        "appearance": {
+          "orientation": "vertical"
+        }
+      },
+      "inputFields": [
+        [
+          "timeTabs",
+          "aggregationOverride"
+        ],
+        [
+          "startDate",
+          "endDate",
+          "relativeTime"
+        ],
+        [
+          "kpiQAReporting",
+          "groupByQAReporting",
+          "worstPerformingLimit",
+          "worstPerforming"
+        ],
+        [
+          "qaReportSprintFilter",
+          "qaReportStatusFilter",
+          "qaReportPriorityFilter"
+        ]
+      ],
+      "advancedInputFields": [
+        [
+          "qaReportTestJobNameFilter",
+          "qaReportEnvNameFilter",
+          "qaReportEnvVersionFilter"
+        ],
+        [
+          "qaReportTestGroupFilter",
+          "qaReportTestGroupFeatureFilter",
+          "qaReportTestScenarioFilter"
+        ],
+        [
+          "qaReportAutoTestRunStatusFilter",
+          "qaReportBugsFilter",
+          "qaReportAssigneeFilter"
+        ],
+        [
+          "qaReportFixVersionsFilter",
+          "qaReportComponentsFilter",
+          "qaReportLabelsFilter"
+        ],
+        [
+          "qaReportBugCategoryFilter",
+          "qaReportBugOriginFilter",
+          "qaReportCustomerNameFilter"
+        ],
+        [
+          "qaReportDetectedVersionFilter",
+          "qaReportScrumTeamFilter",
+          "qaReportScopeChangeFilter"
+        ]
+      ],
+      "data": {
+        "kpiQAReporting": [
+          "qaTotalAutomatedTests"
+        ],
+        "groupByQAReporting": [
+          "qaReportTestJobName"
+        ],
+        "relativeTime": [
+          "4"
+        ],
+        "aggregationOverride": [
+          "AUTO"
+        ],
+        "worstPerforming": [
+          "false"
+        ],
+        "worstPerformingLimit": [
+          10
+        ],
+        "qaReportTestJobNameFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportEnvNameFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportEnvVersionFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportSprintFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportTestGroupFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportTestGroupFeatureFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportTestScenarioFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportAutoTestRunStatusFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportBugsFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportStatusFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportPriorityFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportAssigneeFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportFixVersionsFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportComponentsFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportLabelsFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportBugCategoryFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportBugOriginFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportCustomerNameFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportDetectedVersionFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportScrumTeamFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportScopeChangeFilter": [
+          {
+            "id": "All"
+          }
+        ]
+      },
+      "actionItems": [
+        "qaReportingSwitchView"
+      ]
+    }
+  },
+  {
+    "id": "qaReportingStat",
+    "name": "QA Reporting KPI Snapshot (Stat)",
+    "dashletConfig": {
+      "name": "QA Reporting KPI Snapshot (Stat)",
+      "chartType": "STAT_CHART",
+      "chartHeader": [
+        {
+          "id": "kpiQAReporting",
+          "label": "KPI"
+        },
+        {
+          "id": "description",
+          "label": "Snapshot KPI score card for QA reporting"
+        }
+      ],
+      "chartConfig": {
+        "appearance": {
+          "alignment": "center"
+        }
+      },
+      "inputFields": [
+        [
+          "timeTabs"
+        ],
+        [
+          "startDate",
+          "endDate",
+          "relativeTime"
+        ],
+        [
+          "kpiQAReporting"
+        ],
+        [
+          "groupByQAReporting"
+        ]
+      ],
+      "advancedInputFields": [
+        [
+          "qaReportSprintFilter",
+          "qaReportStatusFilter",
+          "qaReportPriorityFilter"
+        ],
+        [
+          "qaReportBugCategoryFilter",
+          "qaReportBugOriginFilter",
+          "qaReportCustomerNameFilter"
+        ]
+      ],
+      "data": {
+        "kpiQAReporting": [
+          "qaExecutiveQualityScore"
+        ],
+        "groupByQAReporting": [
+          "qaReportSprint"
+        ],
+        "relativeTime": [
+          "4"
+        ],
+        "qaReportSprintFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportStatusFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportPriorityFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportBugCategoryFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportBugOriginFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportCustomerNameFilter": [
+          {
+            "id": "All"
+          }
+        ]
+      },
+      "actionItems": [
+        "qaReportingSwitchView"
+      ]
+    }
+  },
+  {
+    "id": "qaReportingStackedBar",
+    "name": "QA Reporting KPI Distribution (Stacked Bar)",
+    "dashletConfig": {
+      "name": "QA Reporting KPI Distribution (Stacked Bar)",
+      "chartType": "STACKED_BAR_CHART",
+      "chartHeader": [
+        {
+          "id": "kpiQAReporting",
+          "label": "KPI"
+        },
+        {
+          "id": "groupByQAReporting",
+          "label": "Analyze By"
+        },
+        {
+          "id": "description",
+          "label": "Stacked bar view for QA reporting KPIs"
+        }
+      ],
+      "chartConfig": {
+        "appearance": {
+          "orientation": "vertical",
+          "stackingMode": "normal"
+        }
+      },
+      "inputFields": [
+        [
+          "timeTabs",
+          "aggregationOverride"
+        ],
+        [
+          "startDate",
+          "endDate",
+          "relativeTime"
+        ],
+        [
+          "kpiQAReporting",
+          "groupByQAReporting",
+          "worstPerformingLimit",
+          "worstPerforming"
+        ]
+      ],
+      "advancedInputFields": [
+        [
+          "qaReportSprintFilter",
+          "qaReportStatusFilter",
+          "qaReportPriorityFilter"
+        ],
+        [
+          "qaReportBugCategoryFilter",
+          "qaReportBugOriginFilter",
+          "qaReportCustomerNameFilter"
+        ]
+      ],
+      "data": {
+        "kpiQAReporting": [
+          "qaTotalAutomatedTests"
+        ],
+        "groupByQAReporting": [
+          "qaReportTestJobName"
+        ],
+        "relativeTime": [
+          "4"
+        ],
+        "aggregationOverride": [
+          "AUTO"
+        ],
+        "worstPerforming": [
+          "false"
+        ],
+        "worstPerformingLimit": [
+          10
+        ],
+        "qaReportSprintFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportStatusFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportPriorityFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportBugCategoryFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportBugOriginFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportCustomerNameFilter": [
+          {
+            "id": "All"
+          }
+        ]
+      },
+      "actionItems": [
+        "qaReportingSwitchView"
+      ]
+    }
+  },
+  {
+    "id": "qaReportingDual",
+    "name": "QA Reporting KPI Trend (Dual Axis)",
+    "dashletConfig": {
+      "name": "QA Reporting KPI Trend (Dual Axis)",
+      "chartType": "2D_CHART",
+      "chartHeader": [
+        {
+          "id": "kpiQAReportingBar",
+          "label": "KPI 1"
+        },
+        {
+          "id": "kpiQAReportingLine",
+          "label": "KPI 2"
+        },
+        {
+          "id": "description",
+          "label": "Dual axis view for two QA reporting KPIs over time"
+        }
+      ],
+      "chartConfig": {
+        "appearance": {
+          "orientation": "vertical"
+        }
+      },
+      "inputFields": [
+        [
+          "timeTabs",
+          "aggregationOverride"
+        ],
+        [
+          "startDate",
+          "endDate",
+          "relativeTime"
+        ],
+        [
+          {
+            "id": "kpiQAReportingBar",
+            "fetchId": "kpiQAReporting",
+            "kpiIndex": 0,
+            "mergeValues": true,
+            "inputConfig": {
+              "type": "SELECT",
+              "label": "KPI 1 (Bar)",
+              "options": "DYNAMIC",
+              "hideNoneOption": true,
+              "chartType": "BAR_CHART"
+            }
+          },
+          {
+            "id": "kpiQAReportingLine",
+            "fetchId": "kpiQAReporting",
+            "kpiIndex": 1,
+            "mergeValues": true,
+            "inputConfig": {
+              "type": "SELECT",
+              "label": "KPI 2 (Line)",
+              "options": "DYNAMIC",
+              "hideNoneOption": true,
+              "chartType": "LINE_CHART"
+            }
+          }
+        ],
+        [
+          "groupByQAReporting"
+        ]
+      ],
+      "advancedInputFields": [
+        [
+          "qaReportSprintFilter",
+          "qaReportStatusFilter",
+          "qaReportPriorityFilter"
+        ],
+        [
+          "qaReportBugCategoryFilter",
+          "qaReportBugOriginFilter",
+          "qaReportCustomerNameFilter"
+        ]
+      ],
+      "data": {
+        "kpiQAReporting": [
+          "qaTotalAutomatedTests",
+          "qaExecutionSuccessRatePct"
+        ],
+        "kpiQAReportingBar": [
+          "qaTotalAutomatedTests"
+        ],
+        "kpiQAReportingLine": [
+          "qaExecutionSuccessRatePct"
+        ],
+        "groupByQAReporting": [
+          "qaReportTestJobName"
+        ],
+        "relativeTime": [
+          "4"
+        ],
+        "aggregationOverride": [
+          "AUTO"
+        ],
+        "qaReportSprintFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportStatusFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportPriorityFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportBugCategoryFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportBugOriginFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportCustomerNameFilter": [
+          {
+            "id": "All"
+          }
+        ]
+      },
+      "actionItems": [
+        "qaReportingSwitchView"
+      ]
+    }
+  },
+  {
+    "id": "qaReportingTable",
+    "name": "QA Reporting KPI by Time (Table)",
+    "dashletConfig": {
+      "name": "QA Reporting KPI by Time (Table)",
+      "chartType": "TABLE_CHART",
+      "chartHeader": [
+        {
+          "id": "kpiQAReporting",
+          "label": "KPI"
+        },
+        {
+          "id": "description",
+          "label": "Table view for QA reporting KPI values over time"
+        }
+      ],
+      "chartConfig": {
+        "appearance": {
+          "striped": true
+        }
+      },
+      "inputFields": [
+        [
+          "timeTabs",
+          "aggregationOverride"
+        ],
+        [
+          "startDate",
+          "endDate",
+          "relativeTime"
+        ],
+        [
+          "kpiQAReporting",
+          "groupByQAReporting",
+          "worstPerformingLimit",
+          "worstPerforming"
+        ]
+      ],
+      "advancedInputFields": [
+        [
+          "qaReportSprintFilter",
+          "qaReportStatusFilter",
+          "qaReportPriorityFilter"
+        ],
+        [
+          "qaReportBugCategoryFilter",
+          "qaReportBugOriginFilter",
+          "qaReportCustomerNameFilter"
+        ]
+      ],
+      "data": {
+        "kpiQAReporting": [
+          "qaTotalAutomatedTests"
+        ],
+        "groupByQAReporting": [
+          "qaReportTestJobName"
+        ],
+        "relativeTime": [
+          "4"
+        ],
+        "aggregationOverride": [
+          "AUTO"
+        ],
+        "worstPerforming": [
+          "false"
+        ],
+        "worstPerformingLimit": [
+          10
+        ],
+        "qaReportSprintFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportStatusFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportPriorityFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportBugCategoryFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportBugOriginFilter": [
+          {
+            "id": "All"
+          }
+        ],
+        "qaReportCustomerNameFilter": [
+          {
+            "id": "All"
+          }
+        ]
+      },
+      "actionItems": [
+        "qaReportingSwitchView"
+      ]
+    }
+  }
+]

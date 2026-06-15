@@ -1,0 +1,34 @@
+[
+  {
+    "id": "qaReportingSwitchView",
+    "actionConfig": {
+      "type": "MULTIPLE_DASHLET_FLOW",
+      "drillType": "TIME_AND_ELEMENT",
+      "label": "Switch View",
+      "icon": {
+        "id": "mdiPoll",
+        "type": "DYNAMIC"
+      },
+      "layout": {
+        "gridTemplateCols": 3,
+        "gridTemplateRows": 2
+      },
+      "destination": [
+        "qaReportingLine",
+        "qaReportingStackedBar",
+        "qaReportingBar",
+        "qaReportingDual",
+        "qaReportingTable",
+        "qaReportingStat"
+      ],
+      "transition": [
+        "lineView",
+        "stackedBarView",
+        "barView",
+        "dualView",
+        "tableView",
+        "statView"
+      ]
+    }
+  }
+]

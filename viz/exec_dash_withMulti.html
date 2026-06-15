@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Quality Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/index.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .card { background: white; border-radius: 0.75rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); transition: all 0.3s ease; }
+        .card:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .kpi-value { font-size: 1.875rem; font-weight: 700; color: #111827; }
+        .kpi-label { font-size: 0.875rem; color: #6b7280; font-weight: 500; }
+        .chart-container { width: 100%; height: 300px; }
+        .table-container { max-height: 500px; overflow-y: auto; overflow-x: auto; }
+        th { position: sticky; top: 0; background: #f9fafb; z-index: 10; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-7xl mx-auto space-y-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Executive Quality Dashboard</h1>
+                <p class="text-gray-500 mt-1">Comprehensive overview of test automation, bug metrics, and release quality.</p>
+                <div id="active-filters" class="flex gap-2 flex-wrap mt-3"></div>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="resetFilters()" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition shadow-sm">Reset Filters</button>
+                <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition shadow-sm">Export Report</button>
+            </div>
+        </div>
+
+        <div class="card p-5">
+            <h3 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">Dimension Filters</h3>
+            <div id="filter-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="kpi-container"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="card p-5">
+                <div id="control-priority"></div>
+                <div id="chart-priority" class="chart-container"></div>
+            </div>
+            <div class="card p-5">
+                <div id="control-automation"></div>
+                <div id="chart-automation" class="chart-container"></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="card p-5 lg:col-span-1">
+                <div id="control-component"></div>
+                <div id="chart-component" class="chart-container"></div>
+            </div>
+            <div class="card p-5 lg:col-span-2">
+                <div id="control-scope"></div>
+                <div id="chart-sprint" class="chart-container"></div>
+            </div>
+        </div>
+
+        <div class="card p-5">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+                <h3 class="text-lg font-semibold text-gray-800">Detailed Execution & Bug Records</h3>
+                <input type="text" id="table-search" placeholder="Search bugs, assignees, components..." class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64">
+            </div>
+            <div class="table-container">
+                <table class="min-w-[1000px] divide-y divide-gray-200 text-sm">
+                    <thead class="bg-gray-50">
+                        <tr id="table-header"></tr>
+                    </thead>
+                    <tbody id="table-body" class="bg-white divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const csvRaw = `START_TIME,UPDATED_TS,TEST_JOB_NAME,ENV_NAME,ENV_VERSION,SPRINT,TEST_GROUP,TEST_GROUP_FEATURE,TEST_SCENARIO,AUTO_TEST_RUN_STATUS,BUGS,STATUS,PRIORITY,ASSIGNEE,FIX_VERSIONS,COMPONENTS,LABELS,BUG_CATEGORY,BUG_ORIGIN,CUSTOMER_NAME,DETECTED_VERSION,SCRUM_TEAM,SCOPE_CHANGE,total_automated_tests,passed_tests,execution_success_rate_pct,total_scenarios,automation_coverage_pct,passed_scenarios,failed_scenarios,automation_stability_pct,bugs_detected_by_automation,total_bugs_detected,open_bugs_per_sprint,closed_bugs_per_sprint,open_bug_rate_pct,bugs_per_100_tests,avg_resolution_days,avg_execution_duration_min,total_execution_duration_min,executive_quality_score,total_bugs,regression_bugs,critical_regression_bugs,open_regression_bugs,closed_regression_bugs,customer_regression_bugs,avg_regression_resolution_days,blocker_mttr,total_releases,failed_releases,deployments_per_month,completed_sprints
+2026-05-24 06:15:00.000,2026-05-26 07:22:03.000,"","","","","","","","",SAM-12639,Request For Reject,Critical,amit.kumar,"",Front-End,norlys_14.04,Regression,Customer,AT&T|DISH|Norlys,"14.04.00.000.00",ORG-12,Unplanned,1,0,0.0000000000000000000,,0.0700000000000000000,,,,0,1,,,,0.0000000000000000000,,,,,1,1,1,1,0,1,,,0,0,,0
+2025-10-06 12:30:00.000,2026-04-03 12:53:29.000,"","","","","","","","",NAM-10411,Open,Critical,florin.cazacu,"14.02.00.XXX.XX",NAM,"","","",AT&T,"13.11.00.XXX.XX",ORG-13,Unplanned,1,0,0.0000000000000000000,,0.0700000000000000000,,,,0,1,,,,0.0000000000000000000,,,,,1,0,0,0,0,0,,,1,0,,0
+2026-05-26 06:00:00.000,2026-05-27 11:59:29.000,"","","","","","","","",PAM-15592,Rejected,Critical,automation,"","",be-tester,Regression,QA Automation,"","14.05.00.000.00",ORG-11,Unplanned,1,0,0.0000000000000000000,,0.0700000000000000000,,,,0,1,,,,0.0000000000000000000,,,,,1,1,1,0,1,0,,,0,0,,0
+2025-12-26 15:10:00.000,2026-03-11 06:14:55.000,"","","",SPR#170 1/11/26-1/22/26,"","","","",BI-10527,Closed,Critical,mridul.gupta,"14.05.00.000.00",BI,"",Backlog,PSO,AT&T,"14.02.00.024.00",ORG-91,Planned,1,0,0.0000000000000000000,,0.0700000000000000000,,,,0,1,,,,0.0000000000000000000,,,,,1,0,0,0,0,0,,,1,0,1.000000000000000000,1
+2026-02-10 08:10:00.000,2026-02-10 11:00:01.000,PAM_Sanity,discoint,"14.04",SPR#172 2/8/26-2/19/26,"","","","","","","","","","","","","","","","","",1,0,0.0000000000000000000,0,0.0700000000000000000,0,0,,1,1,,,,100.0000000000000000000,,,,,0,0,0,0,0,0,,,0,0,,0
+2026-01-06 07:20:00.000,2026-06-04 09:34:36.000,"","","",SPR#170 1/11/26-1/22/26,"","","","",BI-10554,Closed,Minor,sukanya.khurana,"14.04.00.000.00",NAM,"",Regression,QA,"","14.03.00.XXX.XX",ORG-91,Planned,1,0,0.0000000000000000000,,0.0700000000000000000,,,,0,1,,,,0.0000000000000000000,,,,,1,1,0,0,1,0,,,1,1,1.000000000000000000,1
+2026-04-06 10:50:00.000,2026-04-10 10:01:43.000,"","","",SPR#176 4/05/26-4/16/26,"","","","",BI-11298,Closed,Major,florin.cazacu,"14.04.00.000.03",NAM,"",New_feature,"","","14.03.00.XXX.XX",ORG-13,Added During Sprint,1,0,0.0000000000000000000,,0.0700000000000000000,,,,0,1,,,,0.0000000000000000000,,,,,1,0,0,0,0,0,,,1,0,1.000000000000000000,1
+2026-01-20 12:00:00.000,2026-01-21 07:54:37.000,NAM_Regression,discoint,"14.04",SPR#170 1/11/26-1/22/26,"","","",FAIL,"","","","","","","","","","","","","",5,0,0.0000000000000000000,0,0.3300000000000000000,0,0,,1,1,,,,20.0000000000000000000,,1.4,7.0000,,0,0,0,0,0,0,,,0,0,,0
+2026-04-14 09:20:00.000,2026-05-31 06:06:33.000,"","","",SPR#180 5/31/26-6/11/26,"","","","",BI-11344,Open,Major,prabhakar.srivastav,"",NAM,"",New_feature,"","","14.04.00.000.03",ORG-66,Planned,1,0,0.0000000000000000000,,0.0700000000000000000,,,,0,1,,,,0.0000000000000000000,,,,,1,0,0,0,0,0,,,0,0,,0
+2026-02-23 10:20:00.000,2026-06-04 09:29:08.000,"","","",SPR#173 2/22/26-3/5/26,"","","","",BI-10914,Integrated,Minor,mridul.gupta,"14.04.00.000.00",BI,"",Regression,QA,"","14.03.00.025.00",ORG-91,Added During Sprint,1,0,0.0000000000000000000,,0.0700000000000000000,,,,0,1,,,,0.0000000000000000000,,,,,1,1,0,0,1,0,,,1,1,,1
+2026-03-31 05:35:00.000,2026-04-06 04:08:51.000,"","","",SPR#175 3/22/26-4/02/26,"","","","",BI-11267,Rejected,Major,ishan.tiwari,"",BI,"",Regression,"","","14.04.00.000.00",ORG-66,Added During Sprint,1,0,0.0000000000000000000,,0.0700000000000000000,,,,0,1,,,,0.0000000000000000000,,,,,1,1,0,0,1,0,,,0,0,,1
+2024-07-10 13:10:00.000,2026-02-25 04:56:33.000,"","","",SPR#133 08/11/24-08/22/24,"","","","",BI-7015,Integrated,Major,hila.leuw,"13.10.00.000.00",NAM,"",Regression,"","","13.09.00.000.00",ORG-91,Planned,1,0,0.0000000000000000000,,0.0700000000000000000,,,,0,1,,,,0.0000000000000000000,,,,,1,1,0,0,1,0,,,1,1,,1
+2024-05-20 12:40:00.000,2026-02-25 05:38:20.000,"","","",SPR#127 05/19/24-05/30/24,"","","","",NAM-7998,Closed,Blocker,hila.leuw,"13.09.00.000.00",NAM,BIUrgentDebug,New_feature,Customer,AT&T,"13.07.00.XXX.XX",ORG-91,Added During Sprint,1,0,0.0000000000000000000,,0.0700000000000000000,,,,0,1,,,,0.0000000000000000000,,,,,1,0,0,0,0,0,,,1,0,1.000000000000000000,1
+2025-12-17 09:05:00.000,2026-02-19 10:06:57.000,"","","",SPR#169 12/28/25-1/8/26,"","","","",SAM-12167,Integrated,Major,roxana.sulugiuc,"14.03.00.000.00",SAM,"",Backlog,"","","14.02.00.XXX.XX",ORG-12,Planned,1,0,0.0000000000000000000,,0.0700000000000000000,,,,0,1,,,,0.0000000000000000000,,,,,1,0,0,0,0,0,,,1,0,,1
+2025-07-22 14:05:00.000,2026-03-19 09:25:03.000,"","","",SPR#174 3/8/26-3/19/26,"","","","",SAM-11655,Integrated,Critical,bogdan.boca,"14.05.00.000.00",Back-End,DiscoveryUrgentDebug,Backlog,"","","13.12.00.XXX.XX",ORG-12,Planned,1,0,0.0000000000000000000,,0.0700000000000000000,,,,0,1,,,,0.0000000000000000000,,,,,1,0,0,0,0,0,,,1,0,,1
+2026-03-19 10:00:00.000,2026-04-01 10:56:09.000,"","","",SPR#175 3/22/26-4/02/26,"","","","",BI-11130,Integrated,Major,sathi.reddy,"14.05.00.000.00",BI,"",New_feature,"","","14.05.00.000.00",ORG-66,Planned,1,0,0.0000000000000000000,,0.0700000000000000000,,,,0,1,,,,0.0000000000000000000,,,,,1,0,0,0,0,0,,,1,0,,1
+2023-02-07 11:40:00.000,2026-02-23 10:38:42.000,"","","","","","","","",NAM-3475,Fixed,Major,eldad.hertz,"",BI,"",Backlog,QA,"","13.03.xxx_TMUS_POC",ORG-66,Unplanned,1,0,0.0000000000000000000,,0.0700000000000000000,,,,0,1,,,,0.0000000000000000000,,,,,1,0,0,0,0,0,,,0,0,,0
+2026-04-13 07:00:00.000,2026-06-05 11:40:43.000,"","","",SPR#180 5/31/26-6/11/26,"","","","",NAM-11884,Rejected,Major,naman.agarwal,"14.05.00.000.00",Front-End,"",Backlog,"","","14.05.00.000.00",ORG-92,Planned,1,0,0.0000000000000000000,,0.0700000000000000000,,,,0,1,,,,0.0000000000000000000,,,,,1,0,0,0,0,0,,,1,0,1.000000000000000000,0
+2026-04-28 07:15:00.000,2026-04-28 12:05:51.000,"","","","","","","","",SAM-12506,Rejected,Critical,automation,"","",be-tester,Regression,QA Automation,"","14.05.00.000.00",ORG-12,Unplanned,1,0,0.0000000000000000000,,0.0700000000000000000,,,,0,1,,,,0.0000000000000000000,,,,,1,1,1,0,1,0,,,0,0,,0`;
+
+        let rawData = [];
+        let filteredData = [];
+        let activeFilters = {};
+        let sortCol = '';
+        let sortAsc = true;
+
+        const tableColumns = ["BUGS", "STATUS", "PRIORITY", "COMPONENTS", "SCRUM_TEAM", "SCOPE_CHANGE", "SPRINT", "CUSTOMER_NAME", "total_bugs", "executive_quality_score"];
+        const filterDimensions = ['STATUS', 'PRIORITY', 'COMPONENTS', 'SCRUM_TEAM', 'SCOPE_CHANGE', 'BUG_CATEGORY'];
+        const groupDimensions = ['SPRINT', 'PRIORITY', 'STATUS', 'COMPONENTS', 'SCRUM_TEAM', 'BUG_CATEGORY', 'SCOPE_CHANGE'];
+
+        let chartGroupings = {
+            priority: 'PRIORITY',
+            automation: 'SPRINT',
+            component: 'COMPONENTS',
+            scope: 'SPRINT'
+        };
+
+        function getNumericSum(data, key) {
+            return data.reduce((sum, row) => {
+                const val = parseFloat(row[key]);
+                return sum + (isNaN(val) ? 0 : val);
+            }, 0);
+        }
+
+        function getNumericAvg(data, key) {
+            const valid = data.filter(row => row[key] !== "" && row[key] !== null && !isNaN(parseFloat(row[key])));
+            if (valid.length === 0) return 0;
+            return valid.reduce((sum, row) => sum + parseFloat(row[key]), 0) / valid.length;
+        }
+
+        function getUniqueValues(data, key) {
+            const values = new Set();
+            data.forEach(row => {
+                if (row[key] !== null && row[key] !== undefined && String(row[key]).trim() !== "") {
+                    values.add(String(row[key]));
+                }
+            });
+            return Array.from(values).sort();
+        }
+
+        const kpis = [
+            { label: "Executive Quality Score", value: () => getNumericAvg(filteredData, 'executive_quality_score').toFixed(1) || 'N/A', icon: "📊", color: "text-indigo-600" },
+            { label: "Total Bugs Detected", value: () => Math.round(getNumericSum(filteredData, 'total_bugs')), icon: "🐛", color: "text-red-600" },
+            { label: "Automation Coverage", value: () => (getNumericAvg(filteredData, 'automation_coverage_pct') * 100).toFixed(1) + "%", icon: "⚙️", color: "text-blue-600" },
+            { label: "Open Bug Rate", value: () => getNumericAvg(filteredData, 'open_bug_rate_pct').toFixed(1) + "%", icon: "⚠️", color: "text-orange-600" },
+            { label: "Completed Sprints", value: () => Math.round(getNumericSum(filteredData, 'completed_sprints')), icon: "🏁", color: "text-green-600" }
+        ];
+
+        function renderKPIs() {
+            const container = document.getElementById('kpi-container');
+            container.innerHTML = kpis.map(kpi => `
+                <div class="card p-5 flex items-center space-x-4">
+                    <div class="p-3 rounded-full bg-gray-100">
+                        <span class="text-2xl ${kpi.color}">${kpi.icon}</span>
+                    </div>
+                    <div>
+                        <p class="kpi-label">${kpi.label}</p>
+                        <p class="kpi-value ${kpi.color}">${kpi.value()}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderFilters() {
+            const container = document.getElementById('filter-container');
+            container.innerHTML = filterDimensions.map(dim => {
+                const uniqueVals = getUniqueValues(rawData, dim);
+                const currentVal = activeFilters[dim] || 'All';
+                const options = ['All', ...uniqueVals].map(v => 
+                    `<option value="${v}" ${v === currentVal ? 'selected' : ''}>${v === 'All' ? 'All ' + dim.replace(/_/g, ' ') : v}</option>`
+                ).join('');
+                return `
+                    <div class="flex flex-col">
+                        <label class="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">${dim.replace(/_/g, ' ')}</label>
+                        <select onchange="handleFilterChange('${dim}', this.value)" class="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                            ${options}
+                        </select>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderChartControls() {
+            const controls = {
+                priority: { label: 'Bugs by', default: 'PRIORITY', stackBy: 'STATUS' },
+                automation: { label: 'Metrics by', default: 'SPRINT', metrics: true },
+                component: { label: 'Bugs by', default: 'COMPONENTS', pie: true },
+                scope: { label: 'Trends by', default: 'SPRINT', stackBy: 'SCOPE_CHANGE' }
+            };
+
+            for (const [key, config] of Object.entries(controls)) {
+                const container = document.getElementById(`control-${key}`);
+                if (!container) continue;
+                
+                const options = groupDimensions.map(dim => 
+                    `<option value="${dim}" ${chartGroupings[key] === dim ? 'selected' : ''}>${dim.replace(/_/g, ' ')}</option>`
+                ).join('');
+                
+                container.innerHTML = `
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">${config.label} <span id="label-${key}" class="text-indigo-600">${chartGroupings[key].replace(/_/g, ' ')}</span></h3>
+                        <select onchange="updateChartGrouping('${key}', this.value)" class="text-sm border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 py-1.5 px-3 bg-white border w-full sm:w-auto">
+                            ${options}
+                        </select>
+                    </div>
+                `;
+            }
+        }
+
+        function handleFilterChange(dim, value) {
+            if (value === 'All') {
+                delete activeFilters[dim];
+            } else {
+                activeFilters[dim] = value;
+            }
+            applyFilters();
+        }
+
+        function updateChartGrouping(chartKey, value) {
+            chartGroupings[chartKey] = value;
+            renderChartControls();
+            if (chartKey === 'priority') renderPriorityChart();
+            if (chartKey === 'automation') renderAutomationChart();
+            if (chartKey === 'component') renderComponentChart();
+            if (chartKey === 'scope') renderScopeChart();
+        }
+
+        function applyFilters() {
+            filteredData = rawData.filter(row => {
+                return Object.entries(activeFilters).every(([key, val]) => row[key] === val);
+            });
+            renderFilters();
+            renderActiveFilters();
+            renderKPIs();
+            renderChartControls();
+            renderPriorityChart();
+            renderAutomationChart();
+            renderComponentChart();
+            renderScopeChart();
+            renderTable(filteredData);
+        }
+
+        function resetFilters() {
+            activeFilters = {};
+            document.getElementById('table-search').value = '';
+            applyFilters();
+        }
+
+        function applyFilter(key, value) {
+            activeFilters[key] = value;
+            applyFilters();
+        }
+
+        function removeFilter(key) {
+            delete activeFilters[key];
+            applyFilters();
+        }
+
+        function renderActiveFilters() {
+            const container = document.getElementById('active-filters');
+            const filters = Object.entries(activeFilters);
+            if (filters.length === 0) { container.innerHTML = ''; return; }
+            container.innerHTML = `<div class="flex gap-2 flex-wrap">` + 
+                filters.map(([key, value]) => `
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                        ${key}: ${value}
+                        <button onclick="removeFilter('${key}')" class="ml-2 text-indigo-600 hover:text-indigo-900 font-bold">&times;</button>
+                    </span>
+                `).join('') + `</div>`;
+        }
+
+        function getGroupedCountData(data, groupBy, stackBy = null) {
+            const groups = [...new Set(data.map(r => r[groupBy] || "Unknown"))].filter(g => g !== "Unknown").sort();
+            if (stackBy) {
+                const stacks = [...new Set(data.map(r => r[stackBy] || "Unknown"))].filter(s => s !== "Unknown").sort();
+                const series = stacks.map(stack => ({
+                    name: stack,
+                    type: 'bar',
+                    stack: 'total',
+                    data: groups.map(group => data.filter(r => (r[groupBy] || "Unknown") === group && (r[stackBy] || "Unknown") === stack).length)
+                }));
+                return { groups, series };
+            } else {
+                const series = [{
+                    name: 'Count',
+                    type: 'bar',
+                    data: groups.map(group => data.filter(r => (r[groupBy] || "Unknown") === group).length)
+                }];
+                return { groups, series };
+            }
+        }
+
+        function getGroupedMetricData(data, groupBy, metrics) {
+            const groups = [...new Set(data.map(r => r[groupBy] || "Unknown"))].filter(g => g !== "Unknown").sort();
+            const series = metrics.map(metric => ({
+                name: metric.label,
+                type: 'line',
+                smooth: true,
+                data: groups.map(group => {
+                    const groupData = data.filter(r => (r[groupBy] || "Unknown") === group);
+                    return (getNumericAvg(groupData, metric.key) * (metric.multiplier || 1)).toFixed(1);
+                })
+            }));
+            return { groups, series };
+        }
+
+        function getGroupedPieData(data, groupBy, valueKey) {
+            const agg = {};
+            data.forEach(row => {
+                const group = row[groupBy] || "Unknown";
+                const val = parseFloat(row[valueKey]) || (valueKey === 'count' ? 1 : 0);
+                agg[group] = (agg[group] || 0) + val;
+            });
+            return Object.entries(agg).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+        }
+
+        let chartPriority, chartAutomation, chartComponent, chartScope;
+
+        function renderPriorityChart() {
+            if (!chartPriority) chartPriority = echarts.init(document.getElementById('chart-priority'));
+            const groupBy = chartGroupings.priority;
+            const { groups, series } = getGroupedCountData(filteredData, groupBy, 'STATUS');
+            
+            chartPriority.setOption({
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                legend: { data: series.map(s => s.name), bottom: 0 },
+                grid: { left: '3%', right: '4%', bottom: '15%', top: '10%', containLabel: true },
+                xAxis: { type: 'category', data: groups, axisLabel: { rotate: 30 } },
+                yAxis: { type: 'value', name: 'Count' },
+                series: series.map(s => ({ ...s, itemStyle: { borderRadius: [4, 4, 0, 0] } }))
+            });
+            chartPriority.off('click');
+            chartPriority.on('click', params => applyFilter(groupBy, params.name));
+        }
+
+        function renderAutomationChart() {
+            if (!chartAutomation) chartAutomation = echarts.init(document.getElementById('chart-automation'));
+            const groupBy = chartGroupings.automation;
+            const metrics = [
+                { label: 'Coverage %', key: 'automation_coverage_pct', multiplier: 100 },
+                { label: 'Success Rate %', key: 'execution_success_rate_pct', multiplier: 100 }
+            ];
+            const { groups, series } = getGroupedMetricData(filteredData, groupBy, metrics);
+            
+            chartAutomation.setOption({
+                tooltip: { trigger: 'axis' },
+                legend: { data: series.map(s => s.name), bottom: 0 },
+                grid: { left: '3%', right: '4%', bottom: '15%', top: '10%', containLabel: true },
+                xAxis: { type: 'category', data: groups, axisLabel: { rotate: 30 } },
+                yAxis: { type: 'value', name: 'Percentage', max: 100 },
+                series: series.map((s, i) => ({ 
+                    ...s, 
+                    itemStyle: { color: i === 0 ? '#4f46e5' : '#10b981' }, 
+                    areaStyle: { opacity: 0.1 } 
+                }))
+            });
+        }
+
+        function renderComponentChart() {
+            if (!chartComponent) chartComponent = echarts.init(document.getElementById('chart-component'));
+            const groupBy = chartGroupings.component;
+            const data = getGroupedPieData(filteredData, groupBy, 'total_bugs');
+            
+            chartComponent.setOption({
+                tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+                series: [{
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: { borderRadius: 5, borderColor: '#fff', borderWidth: 2 },
+                    label: { show: true, formatter: '{b}\n{d}%' },
+                    data: data
+                }]
+            });
+            chartComponent.off('click');
+            chartComponent.on('click', params => applyFilter(groupBy, params.name));
+        }
+
+        function renderScopeChart() {
+            if (!chartScope) chartScope = echarts.init(document.getElementById('chart-sprint'));
+            const groupBy = chartGroupings.scope;
+            const { groups, series } = getGroupedCountData(filteredData, groupBy, 'SCOPE_CHANGE');
+            
+            chartScope.setOption({
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                legend: { data: series.map(s => s.name), bottom: 0 },
+                grid: { left: '3%', right: '4%', bottom: '15%', top: '10%', containLabel: true },
+                xAxis: { type: 'category', data: groups, axisLabel: { rotate: 30 } },
+                yAxis: { type: 'value', name: 'Count' },
+                series: series.map(s => ({ ...s, itemStyle: { borderRadius: [4, 4, 0, 0] } }))
+            });
+            chartScope.off('click');
+            chartScope.on('click', params => applyFilter(groupBy, params.name));
+        }
+
+        function renderTable(data) {
+            const thead = document.getElementById('table-header');
+            const tbody = document.getElementById('table-body');
+            thead.innerHTML = tableColumns.map(col => 
+                `<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none" onclick="sortTable('${col}')">
+                    ${col.replace(/_/g, ' ')} ${sortCol === col ? (sortAsc ? '▲' : '▼') : ''}
+                </th>`
+            ).join('');
+            
+            tbody.innerHTML = data.map(row => `
+                <tr class="hover:bg-gray-50 transition">
+                    ${tableColumns.map(col => `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${row[col] !== null && row[col] !== undefined && row[col] !== "" ? row[col] : '-'}</td>`).join('')}
+                </tr>
+            `).join('');
+        }
+
+        function sortTable(col) {
+            if (sortCol === col) sortAsc = !sortAsc;
+            else { sortCol = col; sortAsc = true; }
+            
+            filteredData.sort((a, b) => {
+                let valA = a[col] ?? "";
+                let valB = b[col] ?? "";
+                if (!isNaN(parseFloat(valA)) && !isNaN(parseFloat(valB))) {
+                    return sortAsc ? parseFloat(valA) - parseFloat(valB) : parseFloat(valB) - parseFloat(valA);
+                }
+                valA = String(valA).toLowerCase();
+                valB = String(valB).toLowerCase();
+                if (valA < valB) return sortAsc ? -1 : 1;
+                if (valA > valB) return sortAsc ? 1 : -1;
+                return 0;
+            });
+            renderTable(filteredData);
+        }
+
+        document.getElementById('table-search').addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const searchedData = filteredData.filter(row => {
+                return tableColumns.some(col => String(row[col] ?? "").toLowerCase().includes(term));
+            });
+            renderTable(searchedData);
+        });
+
+        Papa.parse(csvRaw, {
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                rawData = results.data.map(row => {
+                    const cleanRow = {};
+                    for (const key in row) {
+                        let val = row[key];
+                        if (val === "") val = null;
+                        else if (!isNaN(val) && val !== "") val = parseFloat(val);
+                        cleanRow[key] = val;
+                    }
+                    return cleanRow;
+                });
+                filteredData = [...rawData];
+                applyFilters();
+                window.addEventListener('resize', () => {
+                    chartPriority && chartPriority.resize();
+                    chartAutomation && chartAutomation.resize();
+                    chartComponent && chartComponent.resize();
+                    chartScope && chartScope.resize();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+

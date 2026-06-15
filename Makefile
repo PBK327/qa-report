@@ -1,4 +1,4 @@
-.PHONY: help setup install download process process-cleaned push-vertica run clean list-sql render-sql check-jira test-connection docs rollup-vertica
+.PHONY: help setup install download process process-cleaned push-vertica run clean list-sql render-sql check-jira test-connection docs rollup-vertica dashboard-ui-install dashboard-ui-build dashboard-serve dashboard-health dashboard-test
 
 VENV_DIR ?= $(shell pwd)/../Dashboard/.venv
 PYTHON := "$(VENV_DIR)/bin/python"
@@ -27,6 +27,13 @@ help:
 	@echo "  make list-sql          List available SQL templates"
 	@echo "  make render-sql TEMPLATE=<path> [VAR1=val1] [VAR2=val2]"
 	@echo "                         Render a SQL template"
+	@echo ""
+	@echo "Executive Dashboard:"
+	@echo "  make dashboard-ui-install   Install npm packages for React UI"
+	@echo "  make dashboard-ui-build     Build React UI (Vite dist/)"
+	@echo "  make dashboard-serve        Start Python server for dashboard UI + API"
+	@echo "  make dashboard-health       Check dashboard API health endpoint"
+	@echo "  make dashboard-test         Run dashboard smoke checks"
 	@echo ""
 	@echo "Cleanup:"
 	@echo "  make clean             Remove SQLite DB and generated CSVs"
@@ -96,6 +103,7 @@ PERIOD_END ?= 2100-01-01 00:00:00
 TARGET_TABLE_5MIN ?= AGG_QA_REPORT_5_MIN
 TARGET_TABLE_HOUR ?= AGG_QA_REPORT_HOUR
 TARGET_TABLE_DAY ?= AGG_QA_REPORT_DAY
+DASHBOARD_TABLE ?= AGG_QA_REPORT_DAY
 
 rollup-vertica:
 	@echo "Building 5-minute, hourly, and daily aggregations in Vertica..."
@@ -171,6 +179,36 @@ docs:
 	@cat README.md | head -100
 	@echo "..."
 	@echo "Run: less README.md"
+
+# ───────────────────────────────────────────────────────────────────────────
+# Executive Dashboard (React + Python server)
+# ───────────────────────────────────────────────────────────────────────────
+
+dashboard-ui-install:
+	@echo "Installing dashboard UI dependencies..."
+	cd exec_dashboard_ui && npm install
+	@echo "✓ Dashboard UI dependencies installed"
+
+dashboard-ui-build:
+	@echo "Building dashboard UI..."
+	cd exec_dashboard_ui && npm run build
+	@echo "✓ Dashboard UI build complete (exec_dashboard_ui/dist)"
+
+dashboard-serve:
+	@echo "Starting dashboard server on http://$${EXEC_DASH_HOST:-0.0.0.0}:$${EXEC_DASH_PORT:-8000}"
+	@echo "Dashboard table lock: AGG_QA_REPORT_DAY"
+	bash exec_dashboard_server/run.sh
+
+dashboard-health:
+	@echo "Checking dashboard health endpoint..."
+	curl -fsS "http://127.0.0.1:$${EXEC_DASH_PORT:-8000}/api/health"
+	@echo ""
+	@echo "✓ Dashboard health endpoint is reachable"
+
+dashboard-test: dashboard-ui-build
+	@echo "Running dashboard smoke checks..."
+	python3 -m py_compile exec_dashboard_server/server.py
+	@echo "✓ Python server syntax is valid"
 
 # ───────────────────────────────────────────────────────────────────────────
 # .env file handling for render-sql target
