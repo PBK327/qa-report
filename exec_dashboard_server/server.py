@@ -145,10 +145,6 @@ def _fetch_summary(filters: dict) -> dict:
     where_clause = ('WHERE ' + ' AND '.join(where_parts)) if where_parts else ''
 
     sql = f"""
-        WITH test_cases AS (
-            SELECT NULLIF(COUNT("Issue key"), 0) AS Total_Test
-            FROM {_q(schema)}.qa_test_created
-        )
         SELECT
             COUNT(DISTINCT executed_test)                                                      AS total_automated_tests,
             COUNT(DISTINCT CASE WHEN UPPER(auto_test_run_status) = 'PASS'
@@ -156,7 +152,7 @@ def _fetch_summary(filters: dict) -> dict:
             ROUND(100.0 * COUNT(DISTINCT CASE WHEN UPPER(auto_test_run_status) = 'PASS'
                                               THEN executed_test END)
                   / NULLIF(COUNT(DISTINCT executed_test), 0), 2)                               AS execution_success_rate_pct,
-            ROUND(100.0 * COUNT(DISTINCT executed_test) / MAX(Total_Test), 2)                  AS automation_coverage_pct,
+            ROUND(100.0 * COUNT(DISTINCT executed_test) / MAX(total_test), 2)                  AS automation_coverage_pct,
             COUNT(DISTINCT CASE WHEN QA_Report = 'Automation' THEN Bugs END)                   AS bugs_detected_by_automation,
             COUNT(DISTINCT Bugs)                                                                AS total_bugs_detected,
             ROUND(
@@ -192,7 +188,6 @@ def _fetch_summary(filters: dict) -> dict:
             ROUND(COALESCE(AVG(resolution_days), 0), 2)                                         AS avg_resolution_days,
             COUNT(DISTINCT CASE WHEN sprint_status = 'Completed' THEN Sprint END)               AS completed_sprints
         FROM {_q(schema)}.{_q(LOCKED_DASHBOARD_TABLE)} FAGG
-        LEFT JOIN test_cases ON 1 = 1
         {where_clause}
     """
 

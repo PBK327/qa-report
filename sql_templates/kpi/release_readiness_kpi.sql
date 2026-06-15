@@ -1,7 +1,3 @@
-with test_cases as (
-	SELECT NULLIF(COUNT(qat."Issue key"), 0) as Total_Test
-	FROM omniq.qa_test_created qat
-)
 Select
 	START_TIME,
 	updated_ts as Updated,
@@ -30,7 +26,7 @@ Select
 	COUNT(DISTINCT CASE WHEN UPPER(auto_test_run_status) = 'PASS' THEN executed_test END) AS passed_tests,
 	ROUND(100.0 * COUNT(DISTINCT CASE WHEN UPPER(auto_test_run_status) = 'PASS' THEN executed_test END) / NULLIF(COUNT(DISTINCT executed_test), 0), 2) AS execution_success_rate_pct,
 	SUM(total_scenarios) AS total_scenarios,
-	ROUND(100.0 * COUNT(DISTINCT executed_test) / MAX(Total_Test), 2) AS automation_coverage_pct,
+	ROUND(100.0 * COUNT(DISTINCT executed_test) / MAX(total_test), 2) AS automation_coverage_pct,
 	SUM(passed_scenarios) AS passed_scenarios,
 	SUM(failed_scenarios) AS failed_scenarios,
 	ROUND(100.0 * SUM(passed_scenarios) / NULLIF(SUM(passed_scenarios) + SUM(failed_scenarios), 0) , 2) AS automation_stability_pct,
@@ -58,7 +54,6 @@ Select
 	COUNT(DISTINCT CASE WHEN COALESCE(fix_versions,'') <> '' THEN fix_versions END)::numeric / NULLIF(COUNT(DISTINCT CASE WHEN COALESCE(fix_versions,'') <> '' THEN DATE_TRUNC('month',bug_resolved) END),0) AS deployments_per_month,
 	COUNT(DISTINCT CASE WHEN sprint_status = 'Completed' THEN Sprint END) completed_sprints
 From omniq.AGG_QA_REPORT_DAY FAGG
-left join test_cases qat on 1 = 1
 Group By
 	START_TIME,
 	updated_ts,

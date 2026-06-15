@@ -2,7 +2,7 @@
     {
         "id": "rankCustomSqlQA",
         "type": "CUSTOM_SQL",
-        "customSql": "with base AS (SELECT ${TIME_COLUMN}, ${GROUPBY_COLUMN}, ${KPI_COLUMN}, DENSE_RANK() OVER (PARTITION BY ${TIME_QUERY} ORDER BY ${KPI_FORMULA} ${SORT_DIRECTION}) AS rank FROM ${TABLE_NAME} left join (SELECT NULLIF(COUNT(issue_key), 0) as Total_Test FROM omniq.qa_test_created) qat ON 1 = 1 WHERE ${startTime_clause} AND ${endTime_clause} ${FILTER_PLACEHOLDER} GROUP BY ${TIME_COLUMN_ALIAS}, ${GROUPBY_ID}) SELECT ${TIME_COLUMN_ALIAS}, ${KPI_ID}, ${GROUPBY_ID} from base WHERE rank <= ${rank_value} order by ${TIME_COLUMN_ALIAS};"
+        "customSql": "with base AS (SELECT ${TIME_COLUMN}, ${GROUPBY_COLUMN}, ${KPI_COLUMN}, DENSE_RANK() OVER (PARTITION BY ${TIME_QUERY} ORDER BY ${KPI_FORMULA} ${SORT_DIRECTION}) AS rank FROM ${TABLE_NAME} WHERE ${startTime_clause} AND ${endTime_clause} ${FILTER_PLACEHOLDER} GROUP BY ${TIME_COLUMN_ALIAS}, ${GROUPBY_ID}) SELECT ${TIME_COLUMN_ALIAS}, ${KPI_ID}, ${GROUPBY_ID} from base WHERE rank <= ${rank_value} order by ${TIME_COLUMN_ALIAS};"
     },
     {
         "id": "groupByQAReporting",
@@ -158,7 +158,7 @@
                 "extraConfig": "palette,timeInterval,defaultTime"
             }
         ],
-        "customSql": "Select ${TIME_COLUMN}, ${GROUPBY_COLUMN}, ${KPI_COLUMN} from ${TABLE_NAME} left join (SELECT NULLIF(COUNT(issue_key), 0) as Total_Test FROM omniq.qa_test_created) qat ON 1 = 1 where ${startTime_clause} AND ${endTime_clause} ${FILTER_PLACEHOLDER} Group by ${TIME_COLUMN_ALIAS}, ${GROUPBY_ID} Order By ${TIME_COLUMN_ALIAS}",
+        "customSql": "Select ${TIME_COLUMN}, ${GROUPBY_COLUMN}, ${KPI_COLUMN} from ${TABLE_NAME} where ${startTime_clause} AND ${endTime_clause} ${FILTER_PLACEHOLDER} Group by ${TIME_COLUMN_ALIAS}, ${GROUPBY_ID} Order By ${TIME_COLUMN_ALIAS}",
         "data": [
             {
                 "id": "qaTotalAutomatedTests",
@@ -184,7 +184,7 @@
             {
                 "id": "qaAutomationCoveragePct",
                 "name": "Automation Coverage %",
-                "runSql": "ROUND(100.0 * COUNT(DISTINCT EXECUTED_TEST) / NULLIF((SELECT COUNT(qat.\"Issue key\") FROM omniq.qa_test_created qat), 0), 2)",
+                "runSql": "ROUND(100.0 * COUNT(DISTINCT EXECUTED_TEST) / MAX(TOTAL_TEST), 2)",
                 "valueSuffix": "%"
             },
             {

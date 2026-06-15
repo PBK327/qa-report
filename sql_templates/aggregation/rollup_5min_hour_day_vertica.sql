@@ -3,6 +3,7 @@
 -- Required template vars:
 --   ${agg_test_fact_relation}  e.g. omniq.qa_agg_test_fact
 --   ${defect_dim_relation}     e.g. omniq.qa_defect_dim
+--   ${test_created_relation}   e.g. omniq.qa_test_created
 --   ${target_schema}           e.g. omniq
 --   ${target_table_5min}       e.g. AGG_QA_REPORT_5_MIN
 --   ${target_table_hour}       e.g. AGG_QA_REPORT_HOUR
@@ -64,6 +65,7 @@ CREATE TABLE IF NOT EXISTS ${target_schema}.${target_table_5min} (
     open_regression_bugs INT,
     closed_regression_bugs INT,
     customer_regression_bugs INT,
+    total_test INT,
 
     last_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -142,6 +144,7 @@ CREATE TABLE IF NOT EXISTS ${target_schema}.${target_table_hour} (
     open_regression_bugs INT,
     closed_regression_bugs INT,
     customer_regression_bugs INT,
+    total_test INT,
 
     last_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -220,6 +223,7 @@ CREATE TABLE IF NOT EXISTS ${target_schema}.${target_table_day} (
     open_regression_bugs INT,
     closed_regression_bugs INT,
     customer_regression_bugs INT,
+    total_test INT,
 
     last_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -263,6 +267,10 @@ WITH approved_runs AS (
     FROM ${agg_test_fact_relation}
     WHERE "Custom field (Automation Test Run Approved)" = 'Yes'
 ),
+test_cases AS (
+    SELECT NULLIF(COUNT("Issue key"), 0)::INT AS total_test
+    FROM ${test_created_relation}
+),
 src_5m_auto AS (
     SELECT
         TRUNC("Created", 'MI') - INTERVAL '1 minute' * MOD(EXTRACT(MINUTE FROM "Created"), 5) AS start_time,
@@ -304,8 +312,10 @@ src_5m_auto AS (
         0::INT AS critical_regression_bugs,
         0::INT AS open_regression_bugs,
         0::INT AS closed_regression_bugs,
-        0::INT AS customer_regression_bugs
+        0::INT AS customer_regression_bugs,
+        MAX(tc.total_test) AS total_test
     FROM approved_runs
+    CROSS JOIN test_cases tc
     WHERE (
         '${period_start}' = '__ALL__'
         OR (
@@ -380,8 +390,10 @@ src_5m_defect AS (
         COUNT(CASE WHEN "Bug Category" = 'Regression' AND "Priority" IN ('Blocker', 'Critical') THEN "Bugs" END)::INT AS critical_regression_bugs,
         COUNT(CASE WHEN "Bug Category" = 'Regression' AND "Status" NOT IN ('Closed', 'Integrated', 'Rejected') THEN "Bugs" END)::INT AS open_regression_bugs,
         COUNT(CASE WHEN "Bug Category" = 'Regression' AND "Status" IN ('Closed', 'Integrated', 'Rejected') THEN "Bugs" END)::INT AS closed_regression_bugs,
-        COUNT(CASE WHEN "Bug Category" = 'Regression' AND "Bug Origin" IN ('Customer', 'PSO', 'POC') THEN "Bugs" END)::INT AS customer_regression_bugs
+        COUNT(CASE WHEN "Bug Category" = 'Regression' AND "Bug Origin" IN ('Customer', 'PSO', 'POC') THEN "Bugs" END)::INT AS customer_regression_bugs,
+        MAX(tc.total_test) AS total_test
     FROM ${defect_dim_relation}
+    CROSS JOIN test_cases tc
     WHERE (
         '${period_start}' = '__ALL__'
         OR (
@@ -454,7 +466,8 @@ SELECT
     critical_regression_bugs,
     open_regression_bugs,
     closed_regression_bugs,
-    customer_regression_bugs
+    customer_regression_bugs,
+    total_test
 FROM src_5m;
 
 CREATE LOCAL TEMP TABLE _stg_qa_report_hour ON COMMIT PRESERVE ROWS AS
@@ -498,7 +511,8 @@ SELECT
     SUM(critical_regression_bugs) AS critical_regression_bugs,
     SUM(open_regression_bugs) AS open_regression_bugs,
     SUM(closed_regression_bugs) AS closed_regression_bugs,
-    SUM(customer_regression_bugs) AS customer_regression_bugs
+    SUM(customer_regression_bugs) AS customer_regression_bugs,
+    MAX(total_test) AS total_test
 FROM _stg_qa_report_5m
 GROUP BY
     DATE_TRUNC('hour', start_time),
@@ -570,7 +584,8 @@ SELECT
     SUM(critical_regression_bugs) AS critical_regression_bugs,
     SUM(open_regression_bugs) AS open_regression_bugs,
     SUM(closed_regression_bugs) AS closed_regression_bugs,
-    SUM(customer_regression_bugs) AS customer_regression_bugs
+    SUM(customer_regression_bugs) AS customer_regression_bugs,
+    MAX(total_test) AS total_test
 FROM _stg_qa_report_hour
 GROUP BY
     DATE_TRUNC('day', start_time),
@@ -631,7 +646,7 @@ INSERT INTO ${target_schema}.${target_table_5min} (
     total_scenarios, passed_scenarios, failed_scenarios, open_bugs, closed_bugs,
     resolution_days, total_execution_duration_min, total_bugs, regression_bugs,
     critical_regression_bugs, open_regression_bugs, closed_regression_bugs,
-    customer_regression_bugs, last_updated_at
+    customer_regression_bugs, total_test, last_updated_at
 )
 SELECT
     start_time, updated_ts, test_job_name, env_name, env_version, sprint,
@@ -642,7 +657,7 @@ SELECT
     total_scenarios, passed_scenarios, failed_scenarios, open_bugs, closed_bugs,
     resolution_days, total_execution_duration_min, total_bugs, regression_bugs,
     critical_regression_bugs, open_regression_bugs, closed_regression_bugs,
-    customer_regression_bugs, CURRENT_TIMESTAMP
+    customer_regression_bugs, total_test, CURRENT_TIMESTAMP
 FROM _stg_qa_report_5m;
 
 INSERT INTO ${target_schema}.${target_table_hour} (
@@ -654,7 +669,7 @@ INSERT INTO ${target_schema}.${target_table_hour} (
     total_scenarios, passed_scenarios, failed_scenarios, open_bugs, closed_bugs,
     resolution_days, total_execution_duration_min, total_bugs, regression_bugs,
     critical_regression_bugs, open_regression_bugs, closed_regression_bugs,
-    customer_regression_bugs, last_updated_at
+    customer_regression_bugs, total_test, last_updated_at
 )
 SELECT
     start_time, updated_ts, test_job_name, env_name, env_version, sprint,
@@ -665,7 +680,7 @@ SELECT
     total_scenarios, passed_scenarios, failed_scenarios, open_bugs, closed_bugs,
     resolution_days, total_execution_duration_min, total_bugs, regression_bugs,
     critical_regression_bugs, open_regression_bugs, closed_regression_bugs,
-    customer_regression_bugs, CURRENT_TIMESTAMP
+    customer_regression_bugs, total_test, CURRENT_TIMESTAMP
 FROM _stg_qa_report_hour;
 
 INSERT INTO ${target_schema}.${target_table_day} (
@@ -677,7 +692,7 @@ INSERT INTO ${target_schema}.${target_table_day} (
     total_scenarios, passed_scenarios, failed_scenarios, open_bugs, closed_bugs,
     resolution_days, total_execution_duration_min, total_bugs, regression_bugs,
     critical_regression_bugs, open_regression_bugs, closed_regression_bugs,
-    customer_regression_bugs, last_updated_at
+    customer_regression_bugs, total_test, last_updated_at
 )
 SELECT
     start_time, updated_ts, test_job_name, env_name, env_version, sprint,
@@ -688,5 +703,5 @@ SELECT
     total_scenarios, passed_scenarios, failed_scenarios, open_bugs, closed_bugs,
     resolution_days, total_execution_duration_min, total_bugs, regression_bugs,
     critical_regression_bugs, open_regression_bugs, closed_regression_bugs,
-    customer_regression_bugs, CURRENT_TIMESTAMP
+    customer_regression_bugs, total_test, CURRENT_TIMESTAMP
 FROM _stg_qa_report_day;

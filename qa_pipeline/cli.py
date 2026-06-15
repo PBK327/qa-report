@@ -296,6 +296,7 @@ def cmd_run_rollup_sql(args: argparse.Namespace) -> None:
     default_vars = {
         "agg_test_fact_relation": f"{cfg.vertica.schema}.{cfg.vertica.agg_fact_table}",
         "defect_dim_relation": f"{cfg.vertica.schema}.{cfg.vertica.defect_dim_table}",
+        "test_created_relation": f"{cfg.vertica.schema}.{cfg.vertica.test_created_table}",
         "target_schema": cfg.vertica.schema,
         "target_table_5min": args.target_table_5min,
         "target_table_hour": args.target_table_hour,
@@ -321,6 +322,7 @@ def cmd_run_rollup_sql(args: argparse.Namespace) -> None:
     print(f"    template: {template_rel}")
     print(f"    source agg fact: {default_vars['agg_test_fact_relation']}")
     print(f"    source defect dim: {default_vars['defect_dim_relation']}")
+    print(f"    source test created: {default_vars['test_created_relation']}")
     print(f"    target 5min: {default_vars['target_schema']}.{default_vars['target_table_5min']}")
     print(f"    target hour: {default_vars['target_schema']}.{default_vars['target_table_hour']}")
     print(f"    target day:  {default_vars['target_schema']}.{default_vars['target_table_day']}")
